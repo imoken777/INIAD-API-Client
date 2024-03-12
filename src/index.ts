@@ -1,7 +1,14 @@
 import axios, { AxiosResponse } from "axios";
-import { ApiResponse, ICCardInfo, LockerInfo, RoomStatus } from "models";
+import {
+  ApiResponse,
+  ICCardInfo,
+  LockerApiResponse,
+  LockerInfo,
+  RoomStatus,
+} from "./models";
+import { parseToLockerInfo } from "./parser";
 
-function handleErrors(response: AxiosResponse) {
+function handleErrors<T>(response: AxiosResponse<T>): T {
   if (response.status >= 500 && response.status <= 599) {
     let error = {
       status: response.status,
@@ -32,8 +39,10 @@ export class INIADAPIClient {
     const requestUrl = `${this.baseUrl}/locker`;
 
     try {
-      const response = await axios.get(requestUrl, { headers });
-      const responseData = handleErrors(response);
+      const response = await axios.get<LockerApiResponse>(requestUrl, {
+        headers,
+      });
+      const responseData = handleErrors<LockerApiResponse>(response);
 
       if (responseData.status === "error") {
         throw {
@@ -42,32 +51,30 @@ export class INIADAPIClient {
         };
       }
 
-      return {
+      return parseToLockerInfo({
         status: "success",
         description: "Succeeded getting locker information",
-        lockerAddress: responseData.name,
-        lockerFloor: responseData.floor,
-      };
+        name: responseData.name,
+        floor: responseData.floor,
+      });
     } catch (error: unknown) {
       let errorDescription = "Unknown error";
       if (axios.isAxiosError(error)) {
         errorDescription = error.message;
 
         if (error.response?.status === 503) {
-          return {
+          return parseToLockerInfo({
             status: "success",
             description: "Below is dummy data for test purposes",
-            lockerAddress: "32XXXX",
-            lockerFloor: 3,
-          };
+            name: "32XXXX",
+            floor: 3,
+          });
         }
       }
-      return {
+      return parseToLockerInfo({
         status: "fail",
         description: `[Error] ${errorDescription}`,
-        lockerAddress: null,
-        lockerFloor: null,
-      };
+      });
     }
   }
 
@@ -76,8 +83,10 @@ export class INIADAPIClient {
     const requestUrl = `${this.baseUrl}/locker/open`;
 
     try {
-      const response = await axios.post(requestUrl, null, { headers });
-      const responseData = handleErrors(response);
+      const response = await axios.post<LockerApiResponse>(requestUrl, null, {
+        headers,
+      });
+      const responseData = handleErrors<LockerApiResponse>(response);
 
       if (responseData.status === "error") {
         throw {
@@ -86,32 +95,30 @@ export class INIADAPIClient {
         };
       }
 
-      return {
+      return parseToLockerInfo({
         status: "success",
         description: "Succeeded opening locker",
-        lockerAddress: responseData.name,
-        lockerFloor: responseData.floor,
-      };
+        name: responseData.name,
+        floor: responseData.floor,
+      });
     } catch (error: unknown) {
       let errorDescription = "Unknown error";
       if (axios.isAxiosError(error)) {
         errorDescription = error.message;
 
         if (error.response?.status === 503) {
-          return {
+          return parseToLockerInfo({
             status: "success",
             description: "Below is dummy data for test purposes",
-            lockerAddress: "32XXXX",
-            lockerFloor: 3,
-          };
+            name: "32XXXX",
+            floor: 3,
+          });
         }
       }
-      return {
+      return parseToLockerInfo({
         status: "fail",
         description: `[Error] ${errorDescription}`,
-        lockerAddress: null,
-        lockerFloor: null,
-      };
+      });
     }
   }
 
