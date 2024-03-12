@@ -19,16 +19,16 @@ export const parseToRoomStatus = (response: RoomApiResponse): RoomStatus => {
     status: response.status,
     description: response.description,
     temperature:
-      response.data.find((data) => data.sensor_type === "temperature")?.value ??
+      response.data?.find((data) => data.sensorType === "temperature")?.value ??
       null,
     humidity:
-      response.data.find((data) => data.sensor_type === "humidity")?.value ??
+      response.data?.find((data) => data.sensorType === "humidity")?.value ??
       null,
     illuminance:
-      response.data.find((data) => data.sensor_type === "illuminance")?.value ??
+      response.data?.find((data) => data.sensorType === "illuminance")?.value ??
       null,
     airPressure:
-      response.data.find((data) => data.sensor_type === "airPressure")?.value ??
+      response.data?.find((data) => data.sensorType === "airPressure")?.value ??
       null,
   };
 };

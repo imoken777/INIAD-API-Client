@@ -1,5 +1,5 @@
-interface StatusInfo {
-  readonly status: "success" | "fail" | "error";
+export interface StatusInfo {
+  readonly status: "success" | "error";
   readonly description: string;
 }
 
@@ -19,12 +19,12 @@ export type ICCardInfo = StatusInfo & {
 };
 
 export type SensorData = {
-  readonly sensor_type: string;
+  readonly sensorType: string;
   readonly value: number | null;
 };
 
 export type RoomApiResponse = StatusInfo & {
-  data: SensorData[];
+  data?: SensorData[];
 };
 
 export type RoomStatus = StatusInfo & {

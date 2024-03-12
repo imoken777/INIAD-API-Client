@@ -72,7 +72,7 @@ export class INIADAPIClient {
         }
       }
       return parseToLockerInfo({
-        status: "fail",
+        status: "error",
         description: `[Error] ${errorDescription}`,
       });
     }
@@ -116,7 +116,7 @@ export class INIADAPIClient {
         }
       }
       return parseToLockerInfo({
-        status: "fail",
+        status: "error",
         description: `[Error] ${errorDescription}`,
       });
     }
@@ -158,7 +158,7 @@ export class INIADAPIClient {
         }
       }
       return {
-        status: "fail",
+        status: "error",
         description: `[Error] ${errorDescription}`,
         icCardId: null,
         icCardComment: null,
@@ -205,7 +205,7 @@ export class INIADAPIClient {
         }
       }
       return {
-        status: "fail",
+        status: "error",
         description: `[Error] ${errorDescription}`,
       };
     }
@@ -245,7 +245,7 @@ export class INIADAPIClient {
         }
       }
       return {
-        status: "fail",
+        status: "error",
         description: `[Error] ${errorDescription}`,
       };
     }
@@ -284,18 +284,17 @@ export class INIADAPIClient {
             status: "success",
             description: "Below is dummy data for test purposes",
             data: [
-              { sensor_type: "temperature", value: 30.9 },
-              { sensor_type: "humidity", value: 55.5 },
-              { sensor_type: "illuminance", value: 100 },
-              { sensor_type: "airPressure", value: 1006 },
+              { sensorType: "temperature", value: 30.9 },
+              { sensorType: "humidity", value: 55.5 },
+              { sensorType: "illuminance", value: 100 },
+              { sensorType: "airPressure", value: 1006 },
             ],
           });
         }
       }
       return parseToRoomStatus({
-        status: "fail",
+        status: "error",
         description: `[Error] ${errorDescription}`,
-        data: [],
       });
     }
   }
