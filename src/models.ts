@@ -23,7 +23,7 @@ export type SensorData = {
   readonly value: number | null;
 };
 
-export type ApiResponse = StatusInfo & {
+export type RoomApiResponse = StatusInfo & {
   data: SensorData[];
 };
 

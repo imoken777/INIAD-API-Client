@@ -1,12 +1,12 @@
 import axios, { AxiosResponse } from "axios";
 import {
-  ApiResponse,
+  RoomApiResponse,
   ICCardInfo,
   LockerApiResponse,
   LockerInfo,
   RoomStatus,
 } from "./models";
-import { parseToLockerInfo } from "./parser";
+import { parseToLockerInfo, parseToRoomStatus } from "./parser";
 
 function handleErrors<T>(response: AxiosResponse<T>): T {
   if (response.status >= 500 && response.status <= 599) {
@@ -259,8 +259,10 @@ export class INIADAPIClient {
     }/sensors/${roomNumber}?sensor_type=${sensors.join("+")}`;
 
     try {
-      const response = await axios.get<ApiResponse>(requestUrl, { headers });
-      const responseData: ApiResponse = handleErrors(response);
+      const response = await axios.get<RoomApiResponse>(requestUrl, {
+        headers,
+      });
+      const responseData = handleErrors<RoomApiResponse>(response);
       if (responseData.status === "error") {
         throw {
           status: responseData.status,
@@ -268,42 +270,33 @@ export class INIADAPIClient {
         };
       }
 
-      const retrievedSensors = responseData.data.reduce((acc, cur) => {
-        acc[cur.sensor_type] = cur.value || null;
-        return acc;
-      }, {} as Record<string, number | null>);
-
-      return {
+      return parseToRoomStatus({
         status: "success",
         description: "Succeeded getting room status",
-        temperature: retrievedSensors.temperature,
-        humidity: retrievedSensors.humidity,
-        illuminance: retrievedSensors.illuminance,
-        airPressure: retrievedSensors.airpressure,
-      };
+        data: responseData.data,
+      });
     } catch (error) {
       let errorDescription = "Unknown error";
       if (axios.isAxiosError(error)) {
         errorDescription = error.message;
         if (error.response?.status === 503) {
-          return {
+          return parseToRoomStatus({
             status: "success",
             description: "Below is dummy data for test purposes",
-            illuminance: 100,
-            humidity: 55.5,
-            airPressure: 1006,
-            temperature: 30.9,
-          };
+            data: [
+              { sensor_type: "temperature", value: 30.9 },
+              { sensor_type: "humidity", value: 55.5 },
+              { sensor_type: "illuminance", value: 100 },
+              { sensor_type: "airPressure", value: 1006 },
+            ],
+          });
         }
       }
-      return {
+      return parseToRoomStatus({
         status: "fail",
         description: `[Error] ${errorDescription}`,
-        illuminance: null,
-        humidity: null,
-        airPressure: null,
-        temperature: null,
-      };
+        data: [],
+      });
     }
   }
 }
