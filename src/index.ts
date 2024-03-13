@@ -1,9 +1,9 @@
 import axios, { AxiosResponse } from "axios";
 import {
-  RoomApiResponse,
   ICCardInfo,
   LockerApiResponse,
   LockerInfo,
+  RoomApiResponse,
   RoomStatus,
 } from "./models";
 import { parseToLockerInfo, parseToRoomStatus } from "./parser";
@@ -19,7 +19,7 @@ function handleErrors<T>(response: AxiosResponse<T>): T {
   return response.data;
 }
 
-export class INIADAPIClient {
+export class INIADApiClient {
   private baseUrl: string;
   private authHeader: string;
 
