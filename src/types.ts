@@ -33,3 +33,13 @@ export type RoomStatus = StatusInfo & {
   readonly illuminance: number | null;
   readonly airPressure: number | null;
 };
+
+export type CardSignageLink = StatusInfo & {
+  readonly idm: number;
+  readonly url: string;
+  readonly displaySeconds: number;
+};
+
+export type AllCardSignageLinks = StatusInfo & {
+  links?: CardSignageLink[];
+};
