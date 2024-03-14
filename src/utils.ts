@@ -10,3 +10,9 @@ export function handleErrors<T>(response: AxiosResponse<T>): T {
   }
   return response.data;
 }
+
+export function makeBasicAuth(userId: string, password: string): string {
+  const token = `${userId}:${password}`;
+  const hash = btoa(token);
+  return `Basic ${hash}`;
+}

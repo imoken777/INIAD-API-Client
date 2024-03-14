@@ -9,7 +9,7 @@ import {
   RoomStatus,
 } from "./types";
 import { parseToLockerInfo, parseToRoomStatus } from "./parser";
-import { handleErrors } from "./utils";
+import { handleErrors, makeBasicAuth } from "./utils";
 
 export class eduIotApiClient {
   private baseUrl: string;
@@ -17,13 +17,7 @@ export class eduIotApiClient {
 
   constructor(baseUrl: string, userId: string, password: string) {
     this.baseUrl = baseUrl;
-    this.authHeader = this.makeBasicAuth(userId, password);
-  }
-
-  private makeBasicAuth(userId: string, password: string): string {
-    const token = `${userId}:${password}`;
-    const hash = btoa(token);
-    return `Basic ${hash}`;
+    this.authHeader = makeBasicAuth(userId, password);
   }
 
   public async getLockerInfo(): Promise<LockerInfo> {
@@ -298,13 +292,7 @@ export class signageApiClient {
 
   constructor(baseUrl: string, userId: string, password: string) {
     this.baseUrl = baseUrl;
-    this.authHeader = this.makeBasicAuth(userId, password);
-  }
-
-  private makeBasicAuth(userId: string, password: string): string {
-    const token = `${userId}:${password}`;
-    const hash = btoa(token);
-    return `Basic ${hash}`;
+    this.authHeader = makeBasicAuth(userId, password);
   }
 
   //カードIDmに紐づくサイネージで表示するコンテンツを返す関数
