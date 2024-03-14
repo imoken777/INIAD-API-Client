@@ -3,7 +3,7 @@ import {
   LockerInfo,
   RoomApiResponse,
   RoomStatus,
-} from "./models";
+} from "./types";
 
 export const parseToLockerInfo = (response: LockerApiResponse): LockerInfo => {
   return {

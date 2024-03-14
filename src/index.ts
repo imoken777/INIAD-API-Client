@@ -1,23 +1,13 @@
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import {
   ICCardInfo,
   LockerApiResponse,
   LockerInfo,
   RoomApiResponse,
   RoomStatus,
-} from "./models";
+} from "./types";
 import { parseToLockerInfo, parseToRoomStatus } from "./parser";
-
-function handleErrors<T>(response: AxiosResponse<T>): T {
-  if (response.status >= 500 && response.status <= 599) {
-    let error = {
-      status: response.status,
-      statusText: response.statusText,
-    };
-    throw error;
-  }
-  return response.data;
-}
+import { handleErrors } from "./utils";
 
 export class INIADApiClient {
   private baseUrl: string;
