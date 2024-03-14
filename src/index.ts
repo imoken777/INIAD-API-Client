@@ -1,5 +1,7 @@
 import axios from "axios";
 import {
+  AllCardSignageLinks,
+  CardSignageLink,
   ICCardInfo,
   LockerApiResponse,
   LockerInfo,
@@ -9,7 +11,7 @@ import {
 import { parseToLockerInfo, parseToRoomStatus } from "./parser";
 import { handleErrors } from "./utils";
 
-export class INIADApiClient {
+export class eduIotApiClient {
   private baseUrl: string;
   private authHeader: string;
 
@@ -286,6 +288,89 @@ export class INIADApiClient {
         status: "error",
         description: `[Error] ${errorDescription}`,
       });
+    }
+  }
+}
+
+export class signageApiClient {
+  private baseUrl: string;
+  private authHeader: string;
+
+  constructor(baseUrl: string, userId: string, password: string) {
+    this.baseUrl = baseUrl;
+    this.authHeader = this.makeBasicAuth(userId, password);
+  }
+
+  private makeBasicAuth(userId: string, password: string): string {
+    const token = `${userId}:${password}`;
+    const hash = btoa(token);
+    return `Basic ${hash}`;
+  }
+
+  //カードIDmに紐づくサイネージで表示するコンテンツを返す関数
+  public async getContentByCardIdm(cardIdm: number): Promise<CardSignageLink> {
+    const headers = { Authorization: this.authHeader };
+    const requestUrl = `${this.baseUrl}/api/v1/signage/cards/${cardIdm}`;
+
+    try {
+      const response = await axios.get<CardSignageLink>(requestUrl, {
+        headers,
+      });
+      const responseData = handleErrors<CardSignageLink>(response);
+
+      return {
+        status: "success",
+        description: "Succeeded getting content by cardIdm",
+        idm: responseData.idm,
+        url: responseData.url,
+        displaySeconds: responseData.displaySeconds,
+      };
+    } catch (error) {
+      let errorDescription = "Unknown error";
+      if (axios.isAxiosError(error)) {
+        errorDescription = error.message;
+      }
+      return {
+        status: "error",
+        description: `[Error] ${errorDescription}`,
+        idm: 0,
+        url: "",
+        displaySeconds: 0,
+      };
+    }
+  }
+  //ログインユーザのカードIDmとサイネージで表示するコンテンツの紐づけの一覧を返す関数
+  public async getAllCardIdmAndContentList(): Promise<AllCardSignageLinks> {
+    const headers = { Authorization: this.authHeader };
+    const requestUrl = `${this.baseUrl}/api/v1/signage/cards`;
+
+    try {
+      const response = await axios.get<AllCardSignageLinks>(requestUrl, {
+        headers,
+      });
+      const responseData = handleErrors<AllCardSignageLinks>(response);
+
+      if (responseData.status === "error") {
+        throw {
+          status: responseData.status,
+          statusText: responseData.description,
+        };
+      }
+
+      return {
+        status: "success",
+        description: "Succeeded getting all cardIdm and content list",
+        links: responseData.links,
+      };
+    } catch (error) {
+      let errorDescription = "Unknown error";
+      if (axios.isAxiosError(error)) {
+        errorDescription = error.message;
+      }
+      return {
+        status: "error",
+        description: `[Error] ${errorDescription}`,
+      };
     }
   }
 }
