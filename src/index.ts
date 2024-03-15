@@ -1,6 +1,7 @@
 import axios from "axios";
 import {
   AllCardSignageLinks,
+  AllCardSignageLinksApiResponse,
   CardSignageLink,
   ICCardInfo,
   LockerApiResponse,
@@ -8,7 +9,11 @@ import {
   RoomApiResponse,
   RoomStatus,
 } from "./types";
-import { parseToLockerInfo, parseToRoomStatus } from "./parser";
+import {
+  parseToLockerInfo,
+  parseToRoomStatus,
+  parseToAllCardSignageLinks,
+} from "./parser";
 import { dummyDescription, handleErrors, makeBasicAuth } from "./utils";
 
 export class eduIotApiClient {
@@ -248,16 +253,20 @@ export class signageApiClient {
     const requestUrl = `${this.baseUrl}/api/v1/signage/cards`;
 
     try {
-      const response = await axios.get<AllCardSignageLinks>(requestUrl, {
-        headers,
-      });
-      const responseData = handleErrors<AllCardSignageLinks>(response);
+      const response = await axios.get<AllCardSignageLinksApiResponse>(
+        requestUrl,
+        {
+          headers,
+        }
+      );
+      const responseData =
+        handleErrors<AllCardSignageLinksApiResponse>(response);
 
-      return {
+      return parseToAllCardSignageLinks({
         status: "success",
         description: "Succeeded getting all cardIdm and content list",
         links: responseData.links,
-      };
+      });
     } catch (error) {
       throw error;
     }

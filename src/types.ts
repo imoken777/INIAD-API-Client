@@ -40,6 +40,10 @@ export type CardSignageLink = StatusInfo & {
   readonly displaySeconds: number;
 };
 
+export type AllCardSignageLinksApiResponse = StatusInfo & {
+  readonly links?: CardSignageLink[];
+};
+
 export type AllCardSignageLinks = StatusInfo & {
-  links?: CardSignageLink[];
+  readonly links: CardSignageLink[];
 };

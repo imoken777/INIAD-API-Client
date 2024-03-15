@@ -1,4 +1,7 @@
 import {
+  AllCardSignageLinks,
+  AllCardSignageLinksApiResponse,
+  CardSignageLink,
   LockerApiResponse,
   LockerInfo,
   RoomApiResponse,
@@ -30,5 +33,15 @@ export const parseToRoomStatus = (response: RoomApiResponse): RoomStatus => {
     airPressure:
       response.data?.find((data) => data.sensorType === "airPressure")?.value ??
       null,
+  };
+};
+
+export const parseToAllCardSignageLinks = (
+  response: AllCardSignageLinksApiResponse
+): AllCardSignageLinks => {
+  return {
+    status: response.status,
+    description: response.description,
+    links: response.links ?? [],
   };
 };
