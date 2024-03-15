@@ -1,5 +1,5 @@
 export interface StatusInfo {
-  readonly status: "success" | "error";
+  readonly status: "success" | "error" | "dummy";
   readonly description: string;
 }
 

@@ -1,5 +1,8 @@
 import { AxiosResponse } from "axios";
 
+export const dummyDescription =
+  "Dummy data is displayed for access from outside the INIAD Wi-Fi.";
+
 export function handleErrors<T>(response: AxiosResponse<T>): T {
   if (response.status >= 500 && response.status <= 599) {
     let error = {

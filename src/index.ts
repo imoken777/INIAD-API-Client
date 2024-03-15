@@ -9,7 +9,7 @@ import {
   RoomStatus,
 } from "./types";
 import { parseToLockerInfo, parseToRoomStatus } from "./parser";
-import { handleErrors, makeBasicAuth } from "./utils";
+import { dummyDescription, handleErrors, makeBasicAuth } from "./utils";
 
 export class eduIotApiClient {
   private baseUrl: string;
@@ -40,8 +40,8 @@ export class eduIotApiClient {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 503) {
           return parseToLockerInfo({
-            status: "success",
-            description: "Below is dummy data for test purposes",
+            status: "dummy",
+            description: dummyDescription,
             name: "32XXXX",
             floor: 3,
           });
@@ -71,8 +71,8 @@ export class eduIotApiClient {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 503) {
           return parseToLockerInfo({
-            status: "success",
-            description: "Below is dummy data for test purposes",
+            status: "dummy",
+            description: dummyDescription,
             name: "32XXXX",
             floor: 3,
           });
@@ -100,8 +100,8 @@ export class eduIotApiClient {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 503) {
           return {
-            status: "success",
-            description: "Below is dummy data for test purposes",
+            status: "dummy",
+            description: dummyDescription,
             icCardId: "XXXXXXXXXXXXXXXX",
             icCardComment: "dummy comment",
           };
@@ -134,8 +134,8 @@ export class eduIotApiClient {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 503) {
           return {
-            status: "success",
-            description: "This is dummy message for registration IC card",
+            status: "dummy",
+            description: dummyDescription,
           };
         }
       }
@@ -164,8 +164,8 @@ export class eduIotApiClient {
       if (axios.isAxiosError(error)) {
         if (error.response?.status == 503) {
           return {
-            status: "success",
-            description: "This is dummy message for deleting IC card",
+            status: "dummy",
+            description: dummyDescription,
           };
         }
       }
@@ -195,8 +195,8 @@ export class eduIotApiClient {
       if (axios.isAxiosError(error)) {
         if (error.response?.status == 503) {
           return parseToRoomStatus({
-            status: "success",
-            description: "Below is dummy data for test purposes",
+            status: "dummy",
+            description: dummyDescription,
             data: [
               { sensorType: "temperature", value: 30.9 },
               { sensorType: "humidity", value: 55.5 },
