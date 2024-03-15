@@ -271,4 +271,79 @@ export class signageApiClient {
       throw error;
     }
   }
+
+  public async registerContentByCardIdm(
+    cardIdm: number,
+    contentUrl: string,
+    displaySeconds: number
+  ): Promise<CardSignageLink> {
+    const headers = {
+      Authorization: this.authHeader,
+      "Content-Type": "application/json",
+    };
+    const requestUrl = `${this.baseUrl}/api/v1/signage/cards/${cardIdm}`;
+    const data = { url: contentUrl, display_seconds: displaySeconds };
+
+    try {
+      const response = await axios.put<CardSignageLink>(requestUrl, data, {
+        headers,
+      });
+      const responseData = handleErrors(response);
+
+      return {
+        status: "success",
+        description: "Succeeded registering content by cardIdm",
+        idm: responseData.idm,
+        url: responseData.url,
+        displaySeconds: responseData.displaySeconds,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async updateContentByCardIdm(
+    cardIdm: number,
+    contentUrl: string,
+    displaySeconds: number
+  ): Promise<CardSignageLink> {
+    const headers = {
+      Authorization: this.authHeader,
+      "Content-Type": "application/json",
+    };
+    const requestUrl = `${this.baseUrl}/api/v1/signage/cards/${cardIdm}`;
+    const data = { url: contentUrl, display_seconds: displaySeconds };
+
+    try {
+      const response = await axios.patch<CardSignageLink>(requestUrl, data, {
+        headers,
+      });
+      const responseData = handleErrors(response);
+
+      return {
+        status: "success",
+        description: "Succeeded updating content by cardIdm",
+        idm: responseData.idm,
+        url: responseData.url,
+        displaySeconds: responseData.displaySeconds,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  //未実装
+  public async deleteContentByCardIdm(cardIdm: number): Promise<void> {
+    const headers = { Authorization: this.authHeader };
+    const requestUrl = `${this.baseUrl}/api/v1/signage/cards/${cardIdm}`;
+
+    try {
+      const response = await axios.delete(requestUrl, { headers });
+      const responseData = handleErrors(response);
+
+      return;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
