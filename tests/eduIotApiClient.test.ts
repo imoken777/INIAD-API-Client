@@ -6,7 +6,7 @@ import { dummyDescription } from '../src/utils';
 jest.mock('axios', () => ({
   get: jest.fn(),
   post: jest.fn(),
-  isAxiosError: jest.fn((error) => !!error.isAxiosError),
+  isAxiosError: jest.fn((error) => Boolean(error?.isAxiosError)),
 }));
 
 const mockLockerInfo: LockerApiResponse = {
