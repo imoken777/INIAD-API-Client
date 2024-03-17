@@ -125,7 +125,7 @@ export class eduIotApiClient {
       data.append('comment', comment);
 
       const response = await axios.post(requestUrl, data, { headers });
-      const responseData = handleErrors(response);
+      handleErrors(response);
 
       return {
         status: 'success',
@@ -155,7 +155,7 @@ export class eduIotApiClient {
       data.append('uid', uid);
       data.append('comment', comment);
       const response = await axios.delete(requestUrl, { headers, data });
-      const responseData = handleErrors(response);
+      handleErrors(response);
 
       return {
         status: 'success',
@@ -224,42 +224,34 @@ export class signageApiClient {
     const headers = { Authorization: this.authHeader };
     const requestUrl = `${this.baseUrl}/api/v1/signage/cards/${cardIdm}`;
 
-    try {
-      const response = await axios.get<CardSignageLink>(requestUrl, {
-        headers,
-      });
-      const responseData = handleErrors<CardSignageLink>(response);
+    const response = await axios.get<CardSignageLink>(requestUrl, {
+      headers,
+    });
+    const responseData = handleErrors<CardSignageLink>(response);
 
-      return {
-        status: 'success',
-        description: 'Succeeded getting content by cardIdm',
-        idm: responseData.idm,
-        url: responseData.url,
-        displaySeconds: responseData.displaySeconds,
-      };
-    } catch (error) {
-      throw error;
-    }
+    return {
+      status: 'success',
+      description: 'Succeeded getting content by cardIdm',
+      idm: responseData.idm,
+      url: responseData.url,
+      displaySeconds: responseData.displaySeconds,
+    };
   }
   //ログインユーザのカードIDmとサイネージで表示するコンテンツの紐づけの一覧を返す関数
   public async getAllCardIdmAndContentList(): Promise<AllCardSignageLinks> {
     const headers = { Authorization: this.authHeader };
     const requestUrl = `${this.baseUrl}/api/v1/signage/cards`;
 
-    try {
-      const response = await axios.get<AllCardSignageLinksApiResponse>(requestUrl, {
-        headers,
-      });
-      const responseData = handleErrors<AllCardSignageLinksApiResponse>(response);
+    const response = await axios.get<AllCardSignageLinksApiResponse>(requestUrl, {
+      headers,
+    });
+    const responseData = handleErrors<AllCardSignageLinksApiResponse>(response);
 
-      return parseToAllCardSignageLinks({
-        status: 'success',
-        description: 'Succeeded getting all cardIdm and content list',
-        links: responseData.links,
-      });
-    } catch (error) {
-      throw error;
-    }
+    return parseToAllCardSignageLinks({
+      status: 'success',
+      description: 'Succeeded getting all cardIdm and content list',
+      links: responseData.links,
+    });
   }
 
   public async registerContentByCardIdm(
@@ -274,22 +266,18 @@ export class signageApiClient {
     const requestUrl = `${this.baseUrl}/api/v1/signage/cards/${cardIdm}`;
     const data = { url: contentUrl, display_seconds: displaySeconds };
 
-    try {
-      const response = await axios.put<CardSignageLink>(requestUrl, data, {
-        headers,
-      });
-      const responseData = handleErrors(response);
+    const response = await axios.put<CardSignageLink>(requestUrl, data, {
+      headers,
+    });
+    const responseData = handleErrors(response);
 
-      return {
-        status: 'success',
-        description: 'Succeeded registering content by cardIdm',
-        idm: responseData.idm,
-        url: responseData.url,
-        displaySeconds: responseData.displaySeconds,
-      };
-    } catch (error) {
-      throw error;
-    }
+    return {
+      status: 'success',
+      description: 'Succeeded registering content by cardIdm',
+      idm: responseData.idm,
+      url: responseData.url,
+      displaySeconds: responseData.displaySeconds,
+    };
   }
 
   public async updateContentByCardIdm(
@@ -304,22 +292,18 @@ export class signageApiClient {
     const requestUrl = `${this.baseUrl}/api/v1/signage/cards/${cardIdm}`;
     const data = { url: contentUrl, display_seconds: displaySeconds };
 
-    try {
-      const response = await axios.patch<CardSignageLink>(requestUrl, data, {
-        headers,
-      });
-      const responseData = handleErrors(response);
+    const response = await axios.patch<CardSignageLink>(requestUrl, data, {
+      headers,
+    });
+    const responseData = handleErrors(response);
 
-      return {
-        status: 'success',
-        description: 'Succeeded updating content by cardIdm',
-        idm: responseData.idm,
-        url: responseData.url,
-        displaySeconds: responseData.displaySeconds,
-      };
-    } catch (error) {
-      throw error;
-    }
+    return {
+      status: 'success',
+      description: 'Succeeded updating content by cardIdm',
+      idm: responseData.idm,
+      url: responseData.url,
+      displaySeconds: responseData.displaySeconds,
+    };
   }
 
   //未実装
@@ -327,13 +311,9 @@ export class signageApiClient {
     const headers = { Authorization: this.authHeader };
     const requestUrl = `${this.baseUrl}/api/v1/signage/cards/${cardIdm}`;
 
-    try {
-      const response = await axios.delete(requestUrl, { headers });
-      const responseData = handleErrors(response);
+    const response = await axios.delete(requestUrl, { headers });
+    handleErrors(response);
 
-      return;
-    } catch (error) {
-      throw error;
-    }
+    return;
   }
 }
