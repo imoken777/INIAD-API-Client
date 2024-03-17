@@ -1,12 +1,12 @@
 import { eduIotApiClient } from '../src/index';
 import axios from 'axios';
-import { LockerApiResponse, LockerInfo } from '../src/types';
+import type { LockerApiResponse, LockerInfo } from '../src/types';
 import { dummyDescription } from '../src/utils';
 
 jest.mock('axios', () => ({
   get: jest.fn(),
   post: jest.fn(),
-  isAxiosError: jest.fn((error) => true),
+  isAxiosError: jest.fn((error) => !!error.isAxiosError),
 }));
 
 const mockLockerInfo: LockerApiResponse = {
@@ -37,7 +37,7 @@ describe('eduIotApiClient', () => {
     });
 
     it('locker infoの取得に503で失敗した場合はダミーを返すべきです', async () => {
-      (axios.get as jest.Mock).mockRejectedValue({ response: { status: 503 } });
+      (axios.get as jest.Mock).mockRejectedValue({ response: { status: 503 }, isAxiosError: true });
       const client = new eduIotApiClient('http://localhost', 'user', 'password');
       const result = await client.getLockerInfo();
 
