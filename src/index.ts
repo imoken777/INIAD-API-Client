@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from 'axios';
 import type {
   AllCardSignageLinks,
   AllCardSignageLinksApiResponse,
@@ -8,13 +8,9 @@ import type {
   LockerInfo,
   RoomApiResponse,
   RoomStatus,
-} from "./types";
-import {
-  parseToLockerInfo,
-  parseToRoomStatus,
-  parseToAllCardSignageLinks,
-} from "./parser";
-import { dummyDescription, handleErrors, makeBasicAuth } from "./utils";
+} from './types';
+import { parseToLockerInfo, parseToRoomStatus, parseToAllCardSignageLinks } from './parser';
+import { dummyDescription, handleErrors, makeBasicAuth } from './utils';
 
 export class eduIotApiClient {
   private baseUrl: string;
@@ -36,8 +32,8 @@ export class eduIotApiClient {
       const responseData = handleErrors<LockerApiResponse>(response);
 
       return parseToLockerInfo({
-        status: "success",
-        description: "Succeeded getting locker information",
+        status: 'success',
+        description: 'Succeeded getting locker information',
         name: responseData.name,
         floor: responseData.floor,
       });
@@ -45,9 +41,9 @@ export class eduIotApiClient {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 503) {
           return parseToLockerInfo({
-            status: "dummy",
+            status: 'dummy',
             description: dummyDescription,
-            name: "32XXXX",
+            name: '32XXXX',
             floor: 3,
           });
         }
@@ -67,8 +63,8 @@ export class eduIotApiClient {
       const responseData = handleErrors<LockerApiResponse>(response);
 
       return parseToLockerInfo({
-        status: "success",
-        description: "Succeeded opening locker",
+        status: 'success',
+        description: 'Succeeded opening locker',
         name: responseData.name,
         floor: responseData.floor,
       });
@@ -76,9 +72,9 @@ export class eduIotApiClient {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 503) {
           return parseToLockerInfo({
-            status: "dummy",
+            status: 'dummy',
             description: dummyDescription,
-            name: "32XXXX",
+            name: '32XXXX',
             floor: 3,
           });
         }
@@ -96,8 +92,8 @@ export class eduIotApiClient {
       const responseData = handleErrors(response);
 
       return {
-        status: "success",
-        description: "Succeeded getting IC card information",
+        status: 'success',
+        description: 'Succeeded getting IC card information',
         icCardId: responseData[0].uid,
         icCardComment: responseData[0].comment,
       };
@@ -105,10 +101,10 @@ export class eduIotApiClient {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 503) {
           return {
-            status: "dummy",
+            status: 'dummy',
             description: dummyDescription,
-            icCardId: "XXXXXXXXXXXXXXXX",
-            icCardComment: "dummy comment",
+            icCardId: 'XXXXXXXXXXXXXXXX',
+            icCardComment: 'dummy comment',
           };
         }
       }
@@ -119,27 +115,27 @@ export class eduIotApiClient {
   public async registerICCard(uid: string, comment: string) {
     const headers = {
       Authorization: this.authHeader,
-      "Content-Type": "application/x-www-form-urlencoded",
+      'Content-Type': 'application/x-www-form-urlencoded',
     };
     const requestUrl = `${this.baseUrl}/iccards`;
 
     try {
       const data = new URLSearchParams();
-      data.append("uid", uid);
-      data.append("comment", comment);
+      data.append('uid', uid);
+      data.append('comment', comment);
 
       const response = await axios.post(requestUrl, data, { headers });
       const responseData = handleErrors(response);
 
       return {
-        status: "success",
-        description: "Succeeded registering IC card",
+        status: 'success',
+        description: 'Succeeded registering IC card',
       };
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 503) {
           return {
-            status: "dummy",
+            status: 'dummy',
             description: dummyDescription,
           };
         }
@@ -151,25 +147,25 @@ export class eduIotApiClient {
   public async deleteICCard(uid: string, comment: string) {
     const headers = {
       Authorization: this.authHeader,
-      "Content-Type": "application/x-www-form-urlencoded",
+      'Content-Type': 'application/x-www-form-urlencoded',
     };
     const requestUrl = `${this.baseUrl}/iccards/1`;
     try {
       const data = new URLSearchParams();
-      data.append("uid", uid);
-      data.append("comment", comment);
+      data.append('uid', uid);
+      data.append('comment', comment);
       const response = await axios.delete(requestUrl, { headers, data });
       const responseData = handleErrors(response);
 
       return {
-        status: "success",
-        description: "Succeeded deleting IC card",
+        status: 'success',
+        description: 'Succeeded deleting IC card',
       };
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 503) {
           return {
-            status: "dummy",
+            status: 'dummy',
             description: dummyDescription,
           };
         }
@@ -179,11 +175,9 @@ export class eduIotApiClient {
   }
 
   public async getRoomStatus(roomNumber: number): Promise<RoomStatus> {
-    const sensors = ["temperature", "humidity", "illuminance", "airpressure"];
+    const sensors = ['temperature', 'humidity', 'illuminance', 'airpressure'];
     const headers = { Authorization: this.authHeader };
-    const requestUrl = `${
-      this.baseUrl
-    }/sensors/${roomNumber}?sensor_type=${sensors.join("+")}`;
+    const requestUrl = `${this.baseUrl}/sensors/${roomNumber}?sensor_type=${sensors.join('+')}`;
 
     try {
       const response = await axios.get<RoomApiResponse>(requestUrl, {
@@ -192,21 +186,21 @@ export class eduIotApiClient {
       const responseData = handleErrors<RoomApiResponse>(response);
 
       return parseToRoomStatus({
-        status: "success",
-        description: "Succeeded getting room status",
+        status: 'success',
+        description: 'Succeeded getting room status',
         data: responseData.data,
       });
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 503) {
           return parseToRoomStatus({
-            status: "dummy",
+            status: 'dummy',
             description: dummyDescription,
             data: [
-              { sensorType: "temperature", value: 30.9 },
-              { sensorType: "humidity", value: 55.5 },
-              { sensorType: "illuminance", value: 100 },
-              { sensorType: "airPressure", value: 1006 },
+              { sensorType: 'temperature', value: 30.9 },
+              { sensorType: 'humidity', value: 55.5 },
+              { sensorType: 'illuminance', value: 100 },
+              { sensorType: 'airPressure', value: 1006 },
             ],
           });
         }
@@ -237,8 +231,8 @@ export class signageApiClient {
       const responseData = handleErrors<CardSignageLink>(response);
 
       return {
-        status: "success",
-        description: "Succeeded getting content by cardIdm",
+        status: 'success',
+        description: 'Succeeded getting content by cardIdm',
         idm: responseData.idm,
         url: responseData.url,
         displaySeconds: responseData.displaySeconds,
@@ -253,18 +247,14 @@ export class signageApiClient {
     const requestUrl = `${this.baseUrl}/api/v1/signage/cards`;
 
     try {
-      const response = await axios.get<AllCardSignageLinksApiResponse>(
-        requestUrl,
-        {
-          headers,
-        }
-      );
-      const responseData =
-        handleErrors<AllCardSignageLinksApiResponse>(response);
+      const response = await axios.get<AllCardSignageLinksApiResponse>(requestUrl, {
+        headers,
+      });
+      const responseData = handleErrors<AllCardSignageLinksApiResponse>(response);
 
       return parseToAllCardSignageLinks({
-        status: "success",
-        description: "Succeeded getting all cardIdm and content list",
+        status: 'success',
+        description: 'Succeeded getting all cardIdm and content list',
         links: responseData.links,
       });
     } catch (error) {
@@ -279,7 +269,7 @@ export class signageApiClient {
   ): Promise<CardSignageLink> {
     const headers = {
       Authorization: this.authHeader,
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     };
     const requestUrl = `${this.baseUrl}/api/v1/signage/cards/${cardIdm}`;
     const data = { url: contentUrl, display_seconds: displaySeconds };
@@ -291,8 +281,8 @@ export class signageApiClient {
       const responseData = handleErrors(response);
 
       return {
-        status: "success",
-        description: "Succeeded registering content by cardIdm",
+        status: 'success',
+        description: 'Succeeded registering content by cardIdm',
         idm: responseData.idm,
         url: responseData.url,
         displaySeconds: responseData.displaySeconds,
@@ -309,7 +299,7 @@ export class signageApiClient {
   ): Promise<CardSignageLink> {
     const headers = {
       Authorization: this.authHeader,
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     };
     const requestUrl = `${this.baseUrl}/api/v1/signage/cards/${cardIdm}`;
     const data = { url: contentUrl, display_seconds: displaySeconds };
@@ -321,8 +311,8 @@ export class signageApiClient {
       const responseData = handleErrors(response);
 
       return {
-        status: "success",
-        description: "Succeeded updating content by cardIdm",
+        status: 'success',
+        description: 'Succeeded updating content by cardIdm',
         idm: responseData.idm,
         url: responseData.url,
         displaySeconds: responseData.displaySeconds,

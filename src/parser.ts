@@ -5,7 +5,7 @@ import type {
   LockerInfo,
   RoomApiResponse,
   RoomStatus,
-} from "./types";
+} from './types';
 
 export const parseToLockerInfo = (response: LockerApiResponse): LockerInfo => {
   return {
@@ -20,18 +20,10 @@ export const parseToRoomStatus = (response: RoomApiResponse): RoomStatus => {
   return {
     status: response.status,
     description: response.description,
-    temperature:
-      response.data?.find((data) => data.sensorType === "temperature")?.value ??
-      null,
-    humidity:
-      response.data?.find((data) => data.sensorType === "humidity")?.value ??
-      null,
-    illuminance:
-      response.data?.find((data) => data.sensorType === "illuminance")?.value ??
-      null,
-    airPressure:
-      response.data?.find((data) => data.sensorType === "airPressure")?.value ??
-      null,
+    temperature: response.data?.find((data) => data.sensorType === 'temperature')?.value ?? null,
+    humidity: response.data?.find((data) => data.sensorType === 'humidity')?.value ?? null,
+    illuminance: response.data?.find((data) => data.sensorType === 'illuminance')?.value ?? null,
+    airPressure: response.data?.find((data) => data.sensorType === 'airPressure')?.value ?? null,
   };
 };
 

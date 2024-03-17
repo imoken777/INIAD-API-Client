@@ -1,24 +1,24 @@
-import type { AxiosResponse, AxiosResponseHeaders } from "axios";
-import { handleErrors, makeBasicAuth } from "../src/utils";
+import type { AxiosResponse, AxiosResponseHeaders } from 'axios';
+import { handleErrors, makeBasicAuth } from '../src/utils';
 
-describe("handleErrors", () => {
-  it("ステータスコードが5xxでない場合はレスポンスデータを返すべきです", () => {
+describe('handleErrors', () => {
+  it('ステータスコードが5xxでない場合はレスポンスデータを返すべきです', () => {
     const mockResponse: AxiosResponse = {
-      data: { message: "OK" },
+      data: { message: 'OK' },
       status: 200,
-      statusText: "OK",
+      statusText: 'OK',
       headers: {},
       config: { headers: {} as AxiosResponseHeaders },
     };
 
-    expect(handleErrors(mockResponse)).toEqual({ message: "OK" });
+    expect(handleErrors(mockResponse)).toEqual({ message: 'OK' });
   });
 
-  it("ステータスコードが5xxの場合はエラーをスローするべきです", () => {
+  it('ステータスコードが5xxの場合はエラーをスローするべきです', () => {
     const mockResponse: AxiosResponse = {
-      data: { message: "Internal Server Error" },
+      data: { message: 'Internal Server Error' },
       status: 500,
-      statusText: "Internal Server Error",
+      statusText: 'Internal Server Error',
       headers: {},
       config: { headers: {} as AxiosResponseHeaders },
     };
@@ -27,11 +27,11 @@ describe("handleErrors", () => {
   });
 });
 
-describe("makeBasicAuth", () => {
-  it("正しくフォーマットされた基本認証ヘッダーを返すべきです", () => {
-    const userId = "user";
-    const password = "password";
-    const expectedAuthHeader = `Basic ${  btoa(`${userId}:${password}`)}`;
+describe('makeBasicAuth', () => {
+  it('正しくフォーマットされた基本認証ヘッダーを返すべきです', () => {
+    const userId = 'user';
+    const password = 'password';
+    const expectedAuthHeader = `Basic ${btoa(`${userId}:${password}`)}`;
 
     expect(makeBasicAuth(userId, password)).toEqual(expectedAuthHeader);
   });
