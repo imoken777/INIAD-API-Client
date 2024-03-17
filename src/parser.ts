@@ -28,7 +28,7 @@ export const parseToRoomStatus = (response: RoomApiResponse): RoomStatus => {
 };
 
 export const parseToAllCardSignageLinks = (
-  response: AllCardSignageLinksApiResponse
+  response: AllCardSignageLinksApiResponse,
 ): AllCardSignageLinks => {
   return {
     status: response.status,

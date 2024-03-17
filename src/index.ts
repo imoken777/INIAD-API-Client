@@ -265,7 +265,7 @@ export class signageApiClient {
   public async registerContentByCardIdm(
     cardIdm: number,
     contentUrl: string,
-    displaySeconds: number
+    displaySeconds: number,
   ): Promise<CardSignageLink> {
     const headers = {
       Authorization: this.authHeader,
@@ -295,7 +295,7 @@ export class signageApiClient {
   public async updateContentByCardIdm(
     cardIdm: number,
     contentUrl: string,
-    displaySeconds: number
+    displaySeconds: number,
   ): Promise<CardSignageLink> {
     const headers = {
       Authorization: this.authHeader,
