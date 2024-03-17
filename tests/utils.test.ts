@@ -1,4 +1,4 @@
-import { AxiosResponse, AxiosResponseHeaders } from "axios";
+import type { AxiosResponse, AxiosResponseHeaders } from "axios";
 import { handleErrors, makeBasicAuth } from "../src/utils";
 
 describe("handleErrors", () => {
@@ -31,7 +31,7 @@ describe("makeBasicAuth", () => {
   it("正しくフォーマットされた基本認証ヘッダーを返すべきです", () => {
     const userId = "user";
     const password = "password";
-    const expectedAuthHeader = "Basic " + btoa(`${userId}:${password}`);
+    const expectedAuthHeader = `Basic ${  btoa(`${userId}:${password}`)}`;
 
     expect(makeBasicAuth(userId, password)).toEqual(expectedAuthHeader);
   });

@@ -1,5 +1,5 @@
 import axios from "axios";
-import {
+import type {
   AllCardSignageLinks,
   AllCardSignageLinksApiResponse,
   CardSignageLink,
@@ -167,7 +167,7 @@ export class eduIotApiClient {
       };
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        if (error.response?.status == 503) {
+        if (error.response?.status === 503) {
           return {
             status: "dummy",
             description: dummyDescription,
@@ -179,7 +179,7 @@ export class eduIotApiClient {
   }
 
   public async getRoomStatus(roomNumber: number): Promise<RoomStatus> {
-    let sensors = ["temperature", "humidity", "illuminance", "airpressure"];
+    const sensors = ["temperature", "humidity", "illuminance", "airpressure"];
     const headers = { Authorization: this.authHeader };
     const requestUrl = `${
       this.baseUrl
@@ -198,7 +198,7 @@ export class eduIotApiClient {
       });
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        if (error.response?.status == 503) {
+        if (error.response?.status === 503) {
           return parseToRoomStatus({
             status: "dummy",
             description: dummyDescription,

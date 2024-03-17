@@ -1,7 +1,6 @@
-import {
+import type {
   AllCardSignageLinks,
   AllCardSignageLinksApiResponse,
-  CardSignageLink,
   LockerApiResponse,
   LockerInfo,
   RoomApiResponse,
