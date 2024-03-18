@@ -3,6 +3,8 @@ export interface StatusInfo {
   readonly description: string;
 }
 
+export type ValidatedCardIDm = string & { readonly __brand: unique symbol };
+
 export type LockerApiResponse = StatusInfo & {
   name?: string;
   floor?: number;
@@ -14,7 +16,7 @@ export type LockerInfo = StatusInfo & {
 };
 
 export type ICCardInfo = StatusInfo & {
-  readonly icCardId: string | null;
+  readonly cardIDm: string | null;
   readonly icCardComment: string | null;
 };
 
@@ -35,7 +37,7 @@ export type RoomStatus = StatusInfo & {
 };
 
 export type CardSignageLink = StatusInfo & {
-  readonly idm: number;
+  readonly cardIDm: number;
   readonly url: string;
   readonly displaySeconds: number;
 };
