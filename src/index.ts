@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { parseToAllCardSignageLinks, parseToLockerInfo, parseToRoomStatus } from './parser';
 import type {
   AllCardSignageLinks,
   AllCardSignageLinksApiResponse,
@@ -9,8 +10,7 @@ import type {
   RoomApiResponse,
   RoomStatus,
 } from './types';
-import { parseToLockerInfo, parseToRoomStatus, parseToAllCardSignageLinks } from './parser';
-import { dummyDescription, handleErrors, makeBasicAuth } from './utils';
+import { dummyDescription, handleErrors, makeBasicAuth, validateCardIDm } from './utils';
 
 export class eduIotApiClient {
   private baseUrl: string;
@@ -94,7 +94,7 @@ export class eduIotApiClient {
       return {
         status: 'success',
         description: 'Succeeded getting IC card information',
-        icCardId: responseData[0].uid,
+        cardIDm: responseData[0].uid,
         icCardComment: responseData[0].comment,
       };
     } catch (error) {
@@ -103,7 +103,7 @@ export class eduIotApiClient {
           return {
             status: 'dummy',
             description: dummyDescription,
-            icCardId: 'XXXXXXXXXXXXXXXX',
+            cardIDm: 'XXXXXXXXXXXXXXXX',
             icCardComment: 'dummy comment',
           };
         }
@@ -112,7 +112,8 @@ export class eduIotApiClient {
     }
   }
 
-  public async registerICCard(uid: string, comment: string) {
+  public async registerICCard(cardIDm: string, comment: string) {
+    const ValidatedCardIDm = validateCardIDm(cardIDm);
     const headers = {
       Authorization: this.authHeader,
       'Content-Type': 'application/x-www-form-urlencoded',
@@ -121,7 +122,7 @@ export class eduIotApiClient {
 
     try {
       const data = new URLSearchParams();
-      data.append('uid', uid);
+      data.append('uid', ValidatedCardIDm);
       data.append('comment', comment);
 
       const response = await axios.post(requestUrl, data, { headers });
@@ -144,7 +145,8 @@ export class eduIotApiClient {
     }
   }
 
-  public async deleteICCard(uid: string, comment: string) {
+  public async deleteICCard(cardIDm: string, comment: string) {
+    const ValidatedCardIDm = validateCardIDm(cardIDm);
     const headers = {
       Authorization: this.authHeader,
       'Content-Type': 'application/x-www-form-urlencoded',
@@ -152,7 +154,7 @@ export class eduIotApiClient {
     const requestUrl = `${this.baseUrl}/iccards/1`;
     try {
       const data = new URLSearchParams();
-      data.append('uid', uid);
+      data.append('uid', ValidatedCardIDm);
       data.append('comment', comment);
       const response = await axios.delete(requestUrl, { headers, data });
       handleErrors(response);
@@ -220,9 +222,10 @@ export class signageApiClient {
   }
 
   //カードIDmに紐づくサイネージで表示するコンテンツを返す関数
-  public async getContentByCardIdm(cardIdm: number): Promise<CardSignageLink> {
+  public async getContentByCardIDm(cardIDm: string): Promise<CardSignageLink> {
+    const ValidatedCardIDm = validateCardIDm(cardIDm);
     const headers = { Authorization: this.authHeader };
-    const requestUrl = `${this.baseUrl}/api/v1/signage/cards/${cardIdm}`;
+    const requestUrl = `${this.baseUrl}/api/v1/signage/cards/${ValidatedCardIDm}`;
 
     const response = await axios.get<CardSignageLink>(requestUrl, {
       headers,
@@ -231,14 +234,14 @@ export class signageApiClient {
 
     return {
       status: 'success',
-      description: 'Succeeded getting content by cardIdm',
-      idm: responseData.idm,
+      description: 'Succeeded getting content by cardIDm',
+      cardIDm: responseData.cardIDm,
       url: responseData.url,
       displaySeconds: responseData.displaySeconds,
     };
   }
   //ログインユーザのカードIDmとサイネージで表示するコンテンツの紐づけの一覧を返す関数
-  public async getAllCardIdmAndContentList(): Promise<AllCardSignageLinks> {
+  public async getAllCardIDmAndContentList(): Promise<AllCardSignageLinks> {
     const headers = { Authorization: this.authHeader };
     const requestUrl = `${this.baseUrl}/api/v1/signage/cards`;
 
@@ -249,21 +252,22 @@ export class signageApiClient {
 
     return parseToAllCardSignageLinks({
       status: 'success',
-      description: 'Succeeded getting all cardIdm and content list',
+      description: 'Succeeded getting all cardIDm and content list',
       links: responseData.links,
     });
   }
 
-  public async registerContentByCardIdm(
-    cardIdm: number,
+  public async registerContentByCardIDm(
+    cardIDm: string,
     contentUrl: string,
     displaySeconds: number,
   ): Promise<CardSignageLink> {
+    const ValidatedCardIDm = validateCardIDm(cardIDm);
     const headers = {
       Authorization: this.authHeader,
       'Content-Type': 'application/json',
     };
-    const requestUrl = `${this.baseUrl}/api/v1/signage/cards/${cardIdm}`;
+    const requestUrl = `${this.baseUrl}/api/v1/signage/cards/${ValidatedCardIDm}`;
     const data = { url: contentUrl, display_seconds: displaySeconds };
 
     const response = await axios.put<CardSignageLink>(requestUrl, data, {
@@ -273,23 +277,24 @@ export class signageApiClient {
 
     return {
       status: 'success',
-      description: 'Succeeded registering content by cardIdm',
-      idm: responseData.idm,
+      description: 'Succeeded registering content by cardIDm',
+      cardIDm: responseData.cardIDm,
       url: responseData.url,
       displaySeconds: responseData.displaySeconds,
     };
   }
 
-  public async updateContentByCardIdm(
-    cardIdm: number,
+  public async updateContentByCardIDm(
+    cardIDm: string,
     contentUrl: string,
     displaySeconds: number,
   ): Promise<CardSignageLink> {
+    const ValidatedCardIDm = validateCardIDm(cardIDm);
     const headers = {
       Authorization: this.authHeader,
       'Content-Type': 'application/json',
     };
-    const requestUrl = `${this.baseUrl}/api/v1/signage/cards/${cardIdm}`;
+    const requestUrl = `${this.baseUrl}/api/v1/signage/cards/${ValidatedCardIDm}`;
     const data = { url: contentUrl, display_seconds: displaySeconds };
 
     const response = await axios.patch<CardSignageLink>(requestUrl, data, {
@@ -299,17 +304,18 @@ export class signageApiClient {
 
     return {
       status: 'success',
-      description: 'Succeeded updating content by cardIdm',
-      idm: responseData.idm,
+      description: 'Succeeded updating content by cardIDm',
+      cardIDm: responseData.cardIDm,
       url: responseData.url,
       displaySeconds: responseData.displaySeconds,
     };
   }
 
   //未実装
-  public async deleteContentByCardIdm(cardIdm: number): Promise<void> {
+  public async deleteContentByCardIDm(cardIDm: string): Promise<void> {
+    const ValidatedCardIDm = validateCardIDm(cardIDm);
     const headers = { Authorization: this.authHeader };
-    const requestUrl = `${this.baseUrl}/api/v1/signage/cards/${cardIdm}`;
+    const requestUrl = `${this.baseUrl}/api/v1/signage/cards/${ValidatedCardIDm}`;
 
     const response = await axios.delete(requestUrl, { headers });
     handleErrors(response);
