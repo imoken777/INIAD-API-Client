@@ -1,6 +1,10 @@
 import axios from 'axios';
 import { signageApiClient } from '../src';
-import type { CardSignageLink } from '../src/types';
+import type {
+  AllCardSignageLinks,
+  AllCardSignageLinksApiResponse,
+  CardSignageLink,
+} from '../src/types';
 
 jest.mock('axios', () => ({
   get: jest.fn(),
@@ -45,6 +49,52 @@ describe('signageApiClient', () => {
       const result = client.getContentByCardIDm('1234567890123456');
 
       await expect(result).rejects.toThrow('Failed to get content by cardIDm');
+    });
+  });
+
+  describe('getAllCardIDmAndContentList', () => {
+    it('ログインユーザのカードIDmとサイネージで表示するコンテンツの紐づけの一覧を返すべきです', async () => {
+      const mockResponse: AllCardSignageLinksApiResponse = {
+        status: 'success',
+        description: 'Succeeded getting all cardIDm and content list',
+        links: [
+          {
+            cardIDm: '1234567890123456',
+            url: 'https://example.com',
+            displaySeconds: 10,
+          },
+        ],
+      };
+      (axios.get as jest.Mock).mockResolvedValue({ data: mockResponse });
+      const client = new signageApiClient('http://localhost', 'user', 'password');
+      const result = await client.getAllCardIDmAndContentList();
+
+      const expectedResponse: AllCardSignageLinks = {
+        status: 'success',
+        description: 'Succeeded getting all cardIDm and content list',
+        links: [
+          {
+            cardIDm: '1234567890123456',
+            url: 'https://example.com',
+            displaySeconds: 10,
+          },
+        ],
+      };
+
+      expect(result).toEqual(expectedResponse);
+      expect(axios.get).toHaveBeenCalledWith('http://localhost/api/v1/signage/cards', {
+        headers: { Authorization: expect.any(String) },
+      });
+    });
+
+    it('取得に失敗した場合はエラーをスローするべきです', async () => {
+      (axios.get as jest.Mock).mockRejectedValue(
+        new Error('Failed to get all cardIDm and content list'),
+      );
+      const client = new signageApiClient('http://localhost', 'user', 'password');
+      const result = client.getAllCardIDmAndContentList();
+
+      await expect(result).rejects.toThrow('Failed to get all cardIDm and content list');
     });
   });
 });
