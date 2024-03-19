@@ -37,7 +37,7 @@ export type RoomStatus = StatusInfo & {
 };
 
 export type CardSignageLink = StatusInfo & {
-  readonly cardIDm: number;
+  readonly cardIDm: string;
   readonly url: string;
   readonly displaySeconds: number;
 };
