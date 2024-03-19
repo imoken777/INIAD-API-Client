@@ -1,5 +1,5 @@
 import type { AxiosResponse, AxiosResponseHeaders } from 'axios';
-import { handleErrors, makeBasicAuth } from '../src/utils';
+import { handleErrors, makeBasicAuth, validateCardIDm } from '../src/utils';
 
 describe('handleErrors', () => {
   it('ステータスコードが5xxでない場合はレスポンスデータを返すべきです', () => {
@@ -34,5 +34,22 @@ describe('makeBasicAuth', () => {
     const expectedAuthHeader = `Basic ${btoa(`${userId}:${password}`)}`;
 
     expect(makeBasicAuth(userId, password)).toEqual(expectedAuthHeader);
+  });
+});
+
+describe('validateCardIDm', () => {
+  it('正しい形式のカードIDmの場合はtrueを返すべきです', () => {
+    const input = '1234567890123456';
+    expect(validateCardIDm(input)).toEqual(input);
+  });
+
+  it('16桁でないカードIDmの場合はエラーをスローするべきです', () => {
+    const input = '123456789012';
+    expect(() => validateCardIDm(input)).toThrow();
+  });
+
+  it('数字以外が含まれるカードIDmの場合はエラーをスローするべきです', () => {
+    const input = '123456789012345a';
+    expect(() => validateCardIDm(input)).toThrow();
   });
 });
