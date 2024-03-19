@@ -36,16 +36,22 @@ export type RoomStatus = StatusInfo & {
   readonly airPressure: number | null;
 };
 
-export type CardSignageLink = StatusInfo & {
-  readonly cardIDm: string;
-  readonly url: string;
-  readonly displaySeconds: number;
-};
+export type CardSignageLink<IncludeStatusInfo = true> = IncludeStatusInfo extends true
+  ? StatusInfo & {
+      readonly cardIDm: string;
+      readonly url: string;
+      readonly displaySeconds: number;
+    }
+  : {
+      readonly cardIDm: string;
+      readonly url: string;
+      readonly displaySeconds: number;
+    };
 
 export type AllCardSignageLinksApiResponse = StatusInfo & {
-  readonly links?: CardSignageLink[];
+  readonly links?: CardSignageLink<false>[];
 };
 
 export type AllCardSignageLinks = StatusInfo & {
-  readonly links: CardSignageLink[];
+  readonly links: CardSignageLink<false>[];
 };
