@@ -8,7 +8,7 @@ import type {
 
 jest.mock('axios', () => ({
   get: jest.fn(),
-  post: jest.fn(),
+  put: jest.fn(),
 }));
 
 const mockCardSignageLink: CardSignageLink = {
@@ -95,6 +95,43 @@ describe('signageApiClient', () => {
       const result = client.getAllCardIDmAndContentList();
 
       await expect(result).rejects.toThrow('Failed to get all cardIDm and content list');
+    });
+  });
+
+  describe('registerContentByCardIDm', () => {
+    it('カードIDmにコンテンツを登録することに成功した場合はCardSignageLinkを返すべきです', async () => {
+      (axios.put as jest.Mock).mockResolvedValue({ data: mockCardSignageLink });
+      const client = new signageApiClient('http://localhost', 'user', 'password');
+      const result = await client.registerContentByCardIDm(
+        '1234567890123456',
+        'https://example.com',
+        10,
+      );
+
+      const expectedCardSignageLink: CardSignageLink = {
+        status: 'success',
+        description: 'Succeeded registering content by cardIDm',
+        cardIDm: '1234567890123456',
+        url: 'https://example.com',
+        displaySeconds: 10,
+      };
+
+      expect(result).toEqual(expectedCardSignageLink);
+      expect(axios.put).toHaveBeenCalledWith(
+        'http://localhost/api/v1/signage/cards/1234567890123456',
+        { url: 'https://example.com', display_seconds: 10 },
+        { headers: { Authorization: expect.any(String), 'Content-Type': 'application/json' } },
+      );
+    });
+
+    it('登録に失敗した場合はエラーをスローするべきです', async () => {
+      (axios.put as jest.Mock).mockRejectedValue(
+        new Error('Failed to register content by cardIDm'),
+      );
+      const client = new signageApiClient('http://localhost', 'user', 'password');
+      const result = client.registerContentByCardIDm('1234567890123456', 'https://example.com', 10);
+
+      await expect(result).rejects.toThrow('Failed to register content by cardIDm');
     });
   });
 });
