@@ -112,17 +112,12 @@ describe('eduIotApiClient', () => {
   describe('getRoomStatus', () => {
     it('room statusの取得に成功した場合はRoomStatusを返すべきです', async () => {
       const sensors = ['temperature', 'humidity', 'illuminance', 'airpressure'];
-      const mockRoomStatus: RoomApiResponse = {
-        status: 'success',
-        description: 'Succeeded',
-        data: [
-          { sensorType: 'temperature', value: 25 },
-          { sensorType: 'humidity', value: 50 },
-          { sensorType: 'illuminance', value: 500 },
-          { sensorType: 'airPressure', value: 1000 },
-        ],
-      };
-
+      const mockRoomStatus: RoomApiResponse = [
+        { roomNumber: 1111, sensorType: 'temperature', value: 25 },
+        { roomNumber: 1111, sensorType: 'humidity', value: 50 },
+        { roomNumber: 1111, sensorType: 'illuminance', value: 500 },
+        { roomNumber: 1111, sensorType: 'airpressure', value: 1000 },
+      ];
       (axios.get as jest.Mock).mockResolvedValue({ data: mockRoomStatus });
       const client = new eduIotApiClient('http://localhost', 'user', 'password');
       const result = await client.getRoomStatus(1);
