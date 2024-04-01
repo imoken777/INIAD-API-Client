@@ -9,6 +9,7 @@ import type {
   LockerInfo,
   RoomApiResponse,
   RoomStatus,
+  StatusInfo,
 } from './types';
 import { dummyDescription, handleErrors, makeBasicAuth, validateCardIDm } from './utils';
 
@@ -186,25 +187,25 @@ export class eduIotApiClient {
         headers,
       });
       const responseData = handleErrors<RoomApiResponse>(response);
-
-      return parseToRoomStatus({
+      const successStatusInfo: StatusInfo = {
         status: 'success',
         description: 'Succeeded getting room status',
-        data: responseData.data,
-      });
+      };
+      return parseToRoomStatus(successStatusInfo, responseData);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 503) {
-          return parseToRoomStatus({
+          const dummyStatusInfo: StatusInfo = {
             status: 'dummy',
             description: dummyDescription,
-            data: [
-              { sensorType: 'temperature', value: 30.9 },
-              { sensorType: 'humidity', value: 55.5 },
-              { sensorType: 'illuminance', value: 100 },
-              { sensorType: 'airPressure', value: 1006 },
-            ],
-          });
+          };
+          const dummyResponse: RoomApiResponse = [
+            { roomNumber, sensorType: 'temperature', value: 30.9 },
+            { roomNumber, sensorType: 'humidity', value: 55.5 },
+            { roomNumber, sensorType: 'illuminance', value: 100 },
+            { roomNumber, sensorType: 'airpressure', value: 1006 },
+          ];
+          return parseToRoomStatus(dummyStatusInfo, dummyResponse);
         }
       }
       throw error;

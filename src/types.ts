@@ -20,14 +20,11 @@ export type ICCardInfo = StatusInfo & {
   readonly icCardComment: string | null;
 };
 
-export type SensorData = {
+export type RoomApiResponse = Array<{
+  readonly roomNumber: number;
   readonly sensorType: string;
   readonly value: number | null;
-};
-
-export type RoomApiResponse = StatusInfo & {
-  data?: SensorData[];
-};
+}>;
 
 export type RoomStatus = StatusInfo & {
   readonly temperature: number | null;

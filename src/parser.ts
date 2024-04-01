@@ -5,6 +5,7 @@ import type {
   LockerInfo,
   RoomApiResponse,
   RoomStatus,
+  StatusInfo,
 } from './types';
 
 export const parseToLockerInfo = (response: LockerApiResponse): LockerInfo => {
@@ -16,14 +17,39 @@ export const parseToLockerInfo = (response: LockerApiResponse): LockerInfo => {
   };
 };
 
-export const parseToRoomStatus = (response: RoomApiResponse): RoomStatus => {
+export const parseToRoomStatus = (
+  statusInfo: StatusInfo,
+  response: RoomApiResponse,
+): RoomStatus => {
+  let temp: number | null = null;
+  let hum: number | null = null;
+  let illum: number | null = null;
+  let airPres: number | null = null;
+
+  // レスポンスデータをループして各センサー値を更新
+  response.forEach((item) => {
+    switch (item.sensorType) {
+      case 'temperature':
+        temp = item.value;
+        break;
+      case 'humidity':
+        hum = item.value;
+        break;
+      case 'illuminance':
+        illum = item.value;
+        break;
+      case 'airpressure':
+        airPres = item.value;
+        break;
+    }
+  });
+
   return {
-    status: response.status,
-    description: response.description,
-    temperature: response.data?.find((data) => data.sensorType === 'temperature')?.value ?? null,
-    humidity: response.data?.find((data) => data.sensorType === 'humidity')?.value ?? null,
-    illuminance: response.data?.find((data) => data.sensorType === 'illuminance')?.value ?? null,
-    airPressure: response.data?.find((data) => data.sensorType === 'airPressure')?.value ?? null,
+    ...statusInfo,
+    temperature: temp,
+    humidity: hum,
+    illuminance: illum,
+    airPressure: airPres,
   };
 };
 
