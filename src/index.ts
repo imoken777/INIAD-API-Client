@@ -22,7 +22,7 @@ import type {
 } from './types';
 import { dummyDescription, handleErrors, makeBasicAuth, validateCardIDm } from './utils';
 
-export class eduIotApiClient {
+export class EduIotApiClient {
   private baseUrl: string;
   private authHeader: string;
 
@@ -123,7 +123,7 @@ export class eduIotApiClient {
   }
 
   public async registerICCard(cardIDm: string, comment: string) {
-    const ValidatedCardIDm = validateCardIDm(cardIDm);
+    const validatedCardIDm = validateCardIDm(cardIDm);
     const headers = {
       Authorization: this.authHeader,
       'Content-Type': 'application/x-www-form-urlencoded',
@@ -132,7 +132,7 @@ export class eduIotApiClient {
 
     try {
       const data = new URLSearchParams();
-      data.append('uid', ValidatedCardIDm);
+      data.append('uid', validatedCardIDm);
       data.append('comment', comment);
 
       const response = await axios.post(requestUrl, data, { headers });
@@ -156,7 +156,7 @@ export class eduIotApiClient {
   }
 
   public async deleteICCard(cardIDm: string, comment: string) {
-    const ValidatedCardIDm = validateCardIDm(cardIDm);
+    const validatedCardIDm = validateCardIDm(cardIDm);
     const headers = {
       Authorization: this.authHeader,
       'Content-Type': 'application/x-www-form-urlencoded',
@@ -164,7 +164,7 @@ export class eduIotApiClient {
     const requestUrl = `${this.baseUrl}/iccards/1`;
     try {
       const data = new URLSearchParams();
-      data.append('uid', ValidatedCardIDm);
+      data.append('uid', validatedCardIDm);
       data.append('comment', comment);
       const response = await axios.delete(requestUrl, { headers, data });
       handleErrors(response);
@@ -222,7 +222,7 @@ export class eduIotApiClient {
   }
 }
 
-export class signageApiClient {
+export class SignageApiClient {
   private baseUrl: string;
   private authHeader: string;
 
@@ -233,9 +233,9 @@ export class signageApiClient {
 
   //カードIDmに紐づくサイネージで表示するコンテンツを返す関数
   public async getContentByCardIDm(cardIDm: string): Promise<CardSignageLink> {
-    const ValidatedCardIDm = validateCardIDm(cardIDm);
+    const validatedCardIDm = validateCardIDm(cardIDm);
     const headers = { Authorization: this.authHeader };
-    const requestUrl = `${this.baseUrl}/api/v1/signage/cards/${ValidatedCardIDm}`;
+    const requestUrl = `${this.baseUrl}/api/v1/signage/cards/${validatedCardIDm}`;
 
     const response = await axios.get<CardSignageLinkApiResponse>(requestUrl, {
       headers,
@@ -272,12 +272,12 @@ export class signageApiClient {
     contentUrl: string,
     displaySeconds: number,
   ): Promise<CardSignageLink> {
-    const ValidatedCardIDm = validateCardIDm(cardIDm);
+    const validatedCardIDm = validateCardIDm(cardIDm);
     const headers = {
       Authorization: this.authHeader,
       'Content-Type': 'application/json',
     };
-    const requestUrl = `${this.baseUrl}/api/v1/signage/cards/${ValidatedCardIDm}`;
+    const requestUrl = `${this.baseUrl}/api/v1/signage/cards/${validatedCardIDm}`;
     const data = { url: contentUrl, display_seconds: displaySeconds };
 
     const response = await axios.put<CardSignageLinkApiResponse>(requestUrl, data, {
@@ -296,9 +296,9 @@ export class signageApiClient {
 
   //カードIDmに紐づくサイネージで表示するコンテンツを削除する関数
   public async deleteContentByCardIDm(cardIDm: string): Promise<DeleteCardSignageLink> {
-    const ValidatedCardIDm = validateCardIDm(cardIDm);
+    const validatedCardIDm = validateCardIDm(cardIDm);
     const headers = { Authorization: this.authHeader };
-    const requestUrl = `${this.baseUrl}/api/v1/signage/cards/${ValidatedCardIDm}`;
+    const requestUrl = `${this.baseUrl}/api/v1/signage/cards/${validatedCardIDm}`;
 
     const response = await axios.delete<DeleteCardSignageLinkApiResponse>(requestUrl, { headers });
 
@@ -308,6 +308,6 @@ export class signageApiClient {
       status: 'success',
       description: 'Content deleted successfully by cardIDm',
     };
-    return parseToDeleteCardSignageLink(statusInfo, ValidatedCardIDm, responseData);
+    return parseToDeleteCardSignageLink(statusInfo, validatedCardIDm, responseData);
   }
 }

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { signageApiClient } from '../src';
+import { SignageApiClient } from '../src';
 import type {
   AllCardSignageLinks,
   AllCardSignageLinksApiResponse,
@@ -21,11 +21,11 @@ const mockCardSignageLink: CardSignageLinkApiResponse = {
   display_seconds: 10,
 };
 
-describe('signageApiClient', () => {
+describe('SignageApiClient', () => {
   describe('getContentByCardIDm', () => {
     it('カードIDmに紐づくサイネージで表示するコンテンツを返すべきです', async () => {
       (axios.get as jest.Mock).mockResolvedValue({ data: mockCardSignageLink });
-      const client = new signageApiClient('http://localhost', 'user', 'password');
+      const client = new SignageApiClient('http://localhost', 'user', 'password');
       const result = await client.getContentByCardIDm('1234567890123456');
 
       const expectedCardSignageLink: CardSignageLink = {
@@ -47,7 +47,7 @@ describe('signageApiClient', () => {
 
     it('取得に失敗した場合はエラーをスローするべきです', async () => {
       (axios.get as jest.Mock).mockRejectedValue(new Error('Failed to get content by cardIDm'));
-      const client = new signageApiClient('http://localhost', 'user', 'password');
+      const client = new SignageApiClient('http://localhost', 'user', 'password');
       const result = client.getContentByCardIDm('1234567890123456');
 
       await expect(result).rejects.toThrow('Failed to get content by cardIDm');
@@ -64,7 +64,7 @@ describe('signageApiClient', () => {
         },
       ];
       (axios.get as jest.Mock).mockResolvedValue({ data: mockResponse });
-      const client = new signageApiClient('http://localhost', 'user', 'password');
+      const client = new SignageApiClient('http://localhost', 'user', 'password');
       const result = await client.getAllCardIDmAndContentList();
 
       const expectedResponse: AllCardSignageLinks = {
@@ -89,7 +89,7 @@ describe('signageApiClient', () => {
       (axios.get as jest.Mock).mockRejectedValue(
         new Error('Failed to get all cardIDm and content list'),
       );
-      const client = new signageApiClient('http://localhost', 'user', 'password');
+      const client = new SignageApiClient('http://localhost', 'user', 'password');
       const result = client.getAllCardIDmAndContentList();
 
       await expect(result).rejects.toThrow('Failed to get all cardIDm and content list');
@@ -99,7 +99,7 @@ describe('signageApiClient', () => {
   describe('upsertContentByCardIDm', () => {
     it('カードIDmにコンテンツを登録することに成功した場合はCardSignageLinkを返すべきです', async () => {
       (axios.put as jest.Mock).mockResolvedValue({ data: mockCardSignageLink });
-      const client = new signageApiClient('http://localhost', 'user', 'password');
+      const client = new SignageApiClient('http://localhost', 'user', 'password');
       const result = await client.upsertContentByCardIDm(
         '1234567890123456',
         'https://example.com',
@@ -126,7 +126,7 @@ describe('signageApiClient', () => {
       (axios.put as jest.Mock).mockRejectedValue(
         new Error('Failed to register content by cardIDm'),
       );
-      const client = new signageApiClient('http://localhost', 'user', 'password');
+      const client = new SignageApiClient('http://localhost', 'user', 'password');
       const result = client.upsertContentByCardIDm('1234567890123456', 'https://example.com', 10);
 
       await expect(result).rejects.toThrow('Failed to register content by cardIDm');
@@ -141,7 +141,7 @@ describe('signageApiClient', () => {
       };
 
       (axios.delete as jest.Mock).mockResolvedValue({ data: mockResponse });
-      const client = new signageApiClient('http://localhost', 'user', 'password');
+      const client = new SignageApiClient('http://localhost', 'user', 'password');
       const result = await client.deleteContentByCardIDm('1234567890123456');
 
       const expectedResponse = {
@@ -162,7 +162,7 @@ describe('signageApiClient', () => {
       (axios.delete as jest.Mock).mockRejectedValue(
         new Error('Failed to delete content by cardIDm'),
       );
-      const client = new signageApiClient('http://localhost', 'user', 'password');
+      const client = new SignageApiClient('http://localhost', 'user', 'password');
       const result = client.deleteContentByCardIDm('1234567890123456');
 
       await expect(result).rejects.toThrow('Failed to delete content by cardIDm');
