@@ -23,22 +23,23 @@ import type {
 import { dummyDescription, handleErrors, makeBasicAuth, validateCardIDm } from './utils';
 
 export class EduIotApiClient {
-  private baseUrl: string;
-  private authHeader: string;
+  private axiosInstance;
 
   constructor(baseUrl: string, userId: string, password: string) {
-    this.baseUrl = baseUrl;
-    this.authHeader = makeBasicAuth(userId, password);
+    const authHeader = makeBasicAuth(userId, password);
+    this.axiosInstance = axios.create({
+      baseURL: baseUrl,
+      headers: {
+        Authorization: authHeader,
+      },
+    });
   }
 
   public async getLockerInfo(): Promise<LockerInfo> {
-    const headers = { Authorization: this.authHeader };
-    const requestUrl = `${this.baseUrl}/locker`;
+    const requestUrl = '/locker';
 
     try {
-      const response = await axios.get<LockerApiResponse>(requestUrl, {
-        headers,
-      });
+      const response = await this.axiosInstance.get<LockerApiResponse>(requestUrl);
       const responseData = handleErrors<LockerApiResponse>(response);
 
       return parseToLockerInfo({
@@ -63,13 +64,10 @@ export class EduIotApiClient {
   }
 
   public async openLocker(): Promise<LockerInfo> {
-    const headers = { Authorization: this.authHeader };
-    const requestUrl = `${this.baseUrl}/locker/open`;
+    const requestUrl = '/locker/open';
 
     try {
-      const response = await axios.post<LockerApiResponse>(requestUrl, null, {
-        headers,
-      });
+      const response = await this.axiosInstance.post<LockerApiResponse>(requestUrl, null);
       const responseData = handleErrors<LockerApiResponse>(response);
 
       return parseToLockerInfo({
@@ -94,11 +92,10 @@ export class EduIotApiClient {
   }
 
   public async getICCardsInfo(): Promise<ICCardInfo> {
-    const headers = { Authorization: this.authHeader };
-    const requestUrl = `${this.baseUrl}/iccards`;
+    const requestUrl = '/iccard';
 
     try {
-      const response = await axios.get(requestUrl, { headers });
+      const response = await this.axiosInstance.get(requestUrl);
       const responseData = handleErrors(response);
 
       return {
@@ -124,18 +121,19 @@ export class EduIotApiClient {
 
   public async registerICCard(cardIDm: string, comment: string) {
     const validatedCardIDm = validateCardIDm(cardIDm);
-    const headers = {
-      Authorization: this.authHeader,
-      'Content-Type': 'application/x-www-form-urlencoded',
+    const config = {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
     };
-    const requestUrl = `${this.baseUrl}/iccards`;
+    const requestUrl = '/iccards';
 
     try {
       const data = new URLSearchParams();
       data.append('uid', validatedCardIDm);
       data.append('comment', comment);
 
-      const response = await axios.post(requestUrl, data, { headers });
+      const response = await this.axiosInstance.post(requestUrl, data, config);
       handleErrors(response);
 
       return {
@@ -157,16 +155,18 @@ export class EduIotApiClient {
 
   public async deleteICCard(cardIDm: string, comment: string) {
     const validatedCardIDm = validateCardIDm(cardIDm);
-    const headers = {
-      Authorization: this.authHeader,
-      'Content-Type': 'application/x-www-form-urlencoded',
+    const data = new URLSearchParams();
+    data.append('uid', validatedCardIDm);
+    data.append('comment', comment);
+    const config = {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      data,
     };
-    const requestUrl = `${this.baseUrl}/iccards/1`;
+    const requestUrl = '/iccards/1';
     try {
-      const data = new URLSearchParams();
-      data.append('uid', validatedCardIDm);
-      data.append('comment', comment);
-      const response = await axios.delete(requestUrl, { headers, data });
+      const response = await this.axiosInstance.delete(requestUrl, config);
       handleErrors(response);
 
       return {
@@ -188,13 +188,10 @@ export class EduIotApiClient {
 
   public async getRoomStatus(roomNumber: number): Promise<RoomStatus> {
     const sensors = ['temperature', 'humidity', 'illuminance', 'airpressure'];
-    const headers = { Authorization: this.authHeader };
-    const requestUrl = `${this.baseUrl}/sensors/${roomNumber}?sensor_type=${sensors.join('+')}`;
+    const requestUrl = `/sensors/${roomNumber}?sensor_type=${sensors.join('+')}`;
 
     try {
-      const response = await axios.get<RoomApiResponse>(requestUrl, {
-        headers,
-      });
+      const response = await this.axiosInstance.get<RoomApiResponse>(requestUrl);
       const responseData = handleErrors<RoomApiResponse>(response);
       const successStatusInfo: StatusInfo = {
         status: 'success',
@@ -223,23 +220,24 @@ export class EduIotApiClient {
 }
 
 export class SignageApiClient {
-  private baseUrl: string;
-  private authHeader: string;
+  private axiosInstance;
 
   constructor(baseUrl: string, userId: string, password: string) {
-    this.baseUrl = baseUrl;
-    this.authHeader = makeBasicAuth(userId, password);
+    const authHeader = makeBasicAuth(userId, password);
+    this.axiosInstance = axios.create({
+      baseURL: baseUrl,
+      headers: {
+        Authorization: authHeader,
+      },
+    });
   }
 
   //カードIDmに紐づくサイネージで表示するコンテンツを返す関数
   public async getContentByCardIDm(cardIDm: string): Promise<CardSignageLink> {
     const validatedCardIDm = validateCardIDm(cardIDm);
-    const headers = { Authorization: this.authHeader };
-    const requestUrl = `${this.baseUrl}/api/v1/signage/cards/${validatedCardIDm}`;
+    const requestUrl = `/api/v1/signage/cards/${validatedCardIDm}`;
 
-    const response = await axios.get<CardSignageLinkApiResponse>(requestUrl, {
-      headers,
-    });
+    const response = await this.axiosInstance.get<CardSignageLinkApiResponse>(requestUrl);
     const responseData = handleErrors<CardSignageLinkApiResponse>(response);
 
     const successInfo: StatusInfo = {
@@ -251,12 +249,9 @@ export class SignageApiClient {
 
   //ユーザのカードIDmとサイネージで表示するコンテンツの紐づけの一覧を返す関数
   public async getAllCardIDmAndContentList(): Promise<AllCardSignageLinks> {
-    const headers = { Authorization: this.authHeader };
-    const requestUrl = `${this.baseUrl}/api/v1/signage/cards`;
+    const requestUrl = '/api/v1/signage/cards';
 
-    const response = await axios.get<AllCardSignageLinksApiResponse>(requestUrl, {
-      headers,
-    });
+    const response = await this.axiosInstance.get<AllCardSignageLinksApiResponse>(requestUrl);
     const responseData = handleErrors<AllCardSignageLinksApiResponse>(response);
 
     const successInfo: StatusInfo = {
@@ -273,16 +268,19 @@ export class SignageApiClient {
     displaySeconds: number,
   ): Promise<CardSignageLink> {
     const validatedCardIDm = validateCardIDm(cardIDm);
-    const headers = {
-      Authorization: this.authHeader,
-      'Content-Type': 'application/json',
-    };
-    const requestUrl = `${this.baseUrl}/api/v1/signage/cards/${validatedCardIDm}`;
     const data = { url: contentUrl, display_seconds: displaySeconds };
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    };
+    const requestUrl = `/api/v1/signage/cards/${validatedCardIDm}`;
 
-    const response = await axios.put<CardSignageLinkApiResponse>(requestUrl, data, {
-      headers,
-    });
+    const response = await this.axiosInstance.put<CardSignageLinkApiResponse>(
+      requestUrl,
+      data,
+      config,
+    );
     const responseData = handleErrors(response);
 
     return {
@@ -297,10 +295,9 @@ export class SignageApiClient {
   //カードIDmに紐づくサイネージで表示するコンテンツを削除する関数
   public async deleteContentByCardIDm(cardIDm: string): Promise<DeleteCardSignageLink> {
     const validatedCardIDm = validateCardIDm(cardIDm);
-    const headers = { Authorization: this.authHeader };
-    const requestUrl = `${this.baseUrl}/api/v1/signage/cards/${validatedCardIDm}`;
+    const requestUrl = `/api/v1/signage/cards/${validatedCardIDm}`;
 
-    const response = await axios.delete<DeleteCardSignageLinkApiResponse>(requestUrl, { headers });
+    const response = await this.axiosInstance.delete<DeleteCardSignageLinkApiResponse>(requestUrl);
 
     const responseData = handleErrors<DeleteCardSignageLinkApiResponse>(response);
 
