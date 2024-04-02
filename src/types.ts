@@ -5,6 +5,7 @@ export interface StatusInfo {
 
 export type ValidatedCardIDm = string & { readonly __brand: unique symbol };
 
+//TODO: statusInfoはaxiosResponseが持つのでここではもたない
 export type LockerApiResponse = StatusInfo & {
   name?: string;
   floor?: number;
@@ -59,4 +60,14 @@ export type AllCardSignageLinksApiResponse = Array<CardSignageLinkApiResponse>;
 // 全カードのリンク情報のアプリケーション内で使用する型
 export type AllCardSignageLinks = StatusInfo & {
   readonly links: CardSignageLink<false>[];
+};
+
+export type DeleteCardSignageLinkApiResponse = {
+  readonly message: string;
+  readonly removed_count: number;
+};
+
+export type DeleteCardSignageLink = StatusInfo & {
+  readonly cardIDm: string;
+  readonly removeCount: number;
 };

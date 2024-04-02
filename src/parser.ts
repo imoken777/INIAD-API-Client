@@ -3,6 +3,8 @@ import type {
   AllCardSignageLinksApiResponse,
   CardSignageLink,
   CardSignageLinkApiResponse,
+  DeleteCardSignageLink,
+  DeleteCardSignageLinkApiResponse,
   LockerApiResponse,
   LockerInfo,
   RoomApiResponse,
@@ -77,5 +79,18 @@ export const parseToAllCardSignageLinks = (
       url: item.url ?? null,
       displaySeconds: item.display_seconds ?? null,
     })),
+  };
+};
+
+export const parseToDeleteCardSignageLink = (
+  statusInfo: StatusInfo,
+  argCardIDm: string,
+  responseData: DeleteCardSignageLinkApiResponse,
+): DeleteCardSignageLink => {
+  return {
+    status: statusInfo.status,
+    description: statusInfo.description,
+    cardIDm: argCardIDm ?? null,
+    removeCount: responseData.removed_count ?? null,
   };
 };
