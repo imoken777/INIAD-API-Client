@@ -33,22 +33,30 @@ export type RoomStatus = StatusInfo & {
   readonly airPressure: number | null;
 };
 
-export type CardSignageLink<IncludeStatusInfo = true> = IncludeStatusInfo extends true
-  ? StatusInfo & {
-      readonly cardIDm: string;
-      readonly url: string;
-      readonly displaySeconds: number;
-    }
-  : {
-      readonly cardIDm: string;
-      readonly url: string;
-      readonly displaySeconds: number;
-    };
-
-export type AllCardSignageLinksApiResponse = StatusInfo & {
-  readonly links?: CardSignageLink<false>[];
+// APIレスポンス用の型
+export type CardSignageLinkApiResponse = {
+  readonly idm: string;
+  readonly url: string;
+  readonly display_seconds: number;
 };
 
+// アプリケーション内で使用する型
+export type CardSignageLink<IncludeStatusInfo = true> = IncludeStatusInfo extends true
+  ? StatusInfo & {
+      readonly cardIDm: CardSignageLinkApiResponse['idm'];
+      readonly url: CardSignageLinkApiResponse['url'];
+      readonly displaySeconds: CardSignageLinkApiResponse['display_seconds'];
+    }
+  : {
+      readonly cardIDm: CardSignageLinkApiResponse['idm'];
+      readonly url: CardSignageLinkApiResponse['url'];
+      readonly displaySeconds: CardSignageLinkApiResponse['display_seconds'];
+    };
+
+// 全カードのリンク情報のAPIレスポンス用の型
+export type AllCardSignageLinksApiResponse = Array<CardSignageLinkApiResponse>;
+
+// 全カードのリンク情報のアプリケーション内で使用する型
 export type AllCardSignageLinks = StatusInfo & {
   readonly links: CardSignageLink<false>[];
 };
