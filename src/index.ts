@@ -2,6 +2,7 @@ import axios from 'axios';
 import {
   parseToAllCardSignageLinks,
   parseToCardSignageLink,
+  parseToDeleteCardSignageLink,
   parseToLockerInfo,
   parseToRoomStatus,
 } from './parser';
@@ -10,6 +11,8 @@ import type {
   AllCardSignageLinksApiResponse,
   CardSignageLink,
   CardSignageLinkApiResponse,
+  DeleteCardSignageLink,
+  DeleteCardSignageLinkApiResponse,
   ICCardInfo,
   LockerApiResponse,
   LockerInfo,
@@ -291,21 +294,20 @@ export class signageApiClient {
     };
   }
 
-  public async deleteContentByCardIDm(cardIDm: string): Promise<CardSignageLink> {
+  //カードIDmに紐づくサイネージで表示するコンテンツを削除する関数
+  public async deleteContentByCardIDm(cardIDm: string): Promise<DeleteCardSignageLink> {
     const ValidatedCardIDm = validateCardIDm(cardIDm);
     const headers = { Authorization: this.authHeader };
     const requestUrl = `${this.baseUrl}/api/v1/signage/cards/${ValidatedCardIDm}`;
 
-    const response = await axios.delete<CardSignageLinkApiResponse>(requestUrl, { headers });
+    const response = await axios.delete<DeleteCardSignageLinkApiResponse>(requestUrl, { headers });
 
-    const responseData = handleErrors<CardSignageLinkApiResponse>(response);
+    const responseData = handleErrors<DeleteCardSignageLinkApiResponse>(response);
 
-    return {
+    const statusInfo: StatusInfo = {
       status: 'success',
-      description: 'Succeeded deleting content by cardIDm',
-      cardIDm: responseData.idm,
-      url: responseData.url,
-      displaySeconds: responseData.display_seconds,
+      description: 'Content deleted successfully by cardIDm',
     };
+    return parseToDeleteCardSignageLink(statusInfo, ValidatedCardIDm, responseData);
   }
 }
