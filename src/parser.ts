@@ -1,6 +1,8 @@
 import type {
   AllCardSignageLinks,
   AllCardSignageLinksApiResponse,
+  CardSignageLink,
+  CardSignageLinkApiResponse,
   LockerApiResponse,
   LockerInfo,
   RoomApiResponse,
@@ -17,17 +19,14 @@ export const parseToLockerInfo = (response: LockerApiResponse): LockerInfo => {
   };
 };
 
-export const parseToRoomStatus = (
-  statusInfo: StatusInfo,
-  response: RoomApiResponse,
-): RoomStatus => {
+export const parseToRoomStatus = (statusInfo: StatusInfo, data: RoomApiResponse): RoomStatus => {
   let temp: number | null = null;
   let hum: number | null = null;
   let illum: number | null = null;
   let airPres: number | null = null;
 
   // レスポンスデータをループして各センサー値を更新
-  response.forEach((item) => {
+  data.forEach((item) => {
     switch (item.sensorType) {
       case 'temperature':
         temp = item.value;
@@ -53,12 +52,30 @@ export const parseToRoomStatus = (
   };
 };
 
+export const parseToCardSignageLink = (
+  statusInfo: StatusInfo,
+  data: CardSignageLinkApiResponse,
+): CardSignageLink => {
+  return {
+    status: statusInfo.status,
+    description: statusInfo.description,
+    cardIDm: data.idm ?? null,
+    url: data.url ?? null,
+    displaySeconds: data.display_seconds ?? null,
+  };
+};
+
 export const parseToAllCardSignageLinks = (
-  response: AllCardSignageLinksApiResponse,
+  statusInfo: StatusInfo,
+  data: AllCardSignageLinksApiResponse,
 ): AllCardSignageLinks => {
   return {
-    status: response.status,
-    description: response.description,
-    links: response.links ?? [],
+    status: statusInfo.status,
+    description: statusInfo.description,
+    links: data.map((item) => ({
+      cardIDm: item.idm ?? null,
+      url: item.url ?? null,
+      displaySeconds: item.display_seconds ?? null,
+    })),
   };
 };
