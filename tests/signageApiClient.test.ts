@@ -5,12 +5,14 @@ import type {
   AllCardSignageLinksApiResponse,
   CardSignageLink,
   CardSignageLinkApiResponse,
+  DeleteCardSignageLinkApiResponse,
 } from '../src/types';
 
 jest.mock('axios', () => ({
   get: jest.fn(),
   put: jest.fn(),
   patch: jest.fn(),
+  delete: jest.fn(),
 }));
 
 const mockCardSignageLink: CardSignageLinkApiResponse = {
@@ -128,6 +130,42 @@ describe('signageApiClient', () => {
       const result = client.upsertContentByCardIDm('1234567890123456', 'https://example.com', 10);
 
       await expect(result).rejects.toThrow('Failed to register content by cardIDm');
+    });
+  });
+
+  describe('deleteContentByCardIDm', () => {
+    it('カードIDmに紐づくコンテンツを削除することに成功した場合はDeleteCardSignageLinkを返すべきです', async () => {
+      const mockResponse: DeleteCardSignageLinkApiResponse = {
+        message: 'ok',
+        removed_count: 1,
+      };
+
+      (axios.delete as jest.Mock).mockResolvedValue({ data: mockResponse });
+      const client = new signageApiClient('http://localhost', 'user', 'password');
+      const result = await client.deleteContentByCardIDm('1234567890123456');
+
+      const expectedResponse = {
+        status: 'success',
+        description: 'Content deleted successfully by cardIDm',
+        cardIDm: '1234567890123456',
+        removeCount: 1,
+      };
+
+      expect(result).toEqual(expectedResponse);
+      expect(axios.delete).toHaveBeenCalledWith(
+        'http://localhost/api/v1/signage/cards/1234567890123456',
+        { headers: { Authorization: expect.any(String) } },
+      );
+    });
+
+    it('削除に失敗した場合はエラーをスローするべきです', async () => {
+      (axios.delete as jest.Mock).mockRejectedValue(
+        new Error('Failed to delete content by cardIDm'),
+      );
+      const client = new signageApiClient('http://localhost', 'user', 'password');
+      const result = client.deleteContentByCardIDm('1234567890123456');
+
+      await expect(result).rejects.toThrow('Failed to delete content by cardIDm');
     });
   });
 });
