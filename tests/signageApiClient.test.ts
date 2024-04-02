@@ -4,6 +4,7 @@ import type {
   AllCardSignageLinks,
   AllCardSignageLinksApiResponse,
   CardSignageLink,
+  CardSignageLinkApiResponse,
 } from '../src/types';
 
 jest.mock('axios', () => ({
@@ -12,12 +13,10 @@ jest.mock('axios', () => ({
   patch: jest.fn(),
 }));
 
-const mockCardSignageLink: CardSignageLink = {
-  status: 'success',
-  description: 'Succeeded getting content by cardIDm',
-  cardIDm: '1234567890123456',
+const mockCardSignageLink: CardSignageLinkApiResponse = {
+  idm: '1234567890123456',
   url: 'https://example.com',
-  displaySeconds: 10,
+  display_seconds: 10,
 };
 
 describe('signageApiClient', () => {
@@ -55,17 +54,13 @@ describe('signageApiClient', () => {
 
   describe('getAllCardIDmAndContentList', () => {
     it('ログインユーザのカードIDmとサイネージで表示するコンテンツの紐づけの一覧を返すべきです', async () => {
-      const mockResponse: AllCardSignageLinksApiResponse = {
-        status: 'success',
-        description: 'Succeeded getting all cardIDm and content list',
-        links: [
-          {
-            cardIDm: '1234567890123456',
-            url: 'https://example.com',
-            displaySeconds: 10,
-          },
-        ],
-      };
+      const mockResponse: AllCardSignageLinksApiResponse = [
+        {
+          idm: '1234567890123456',
+          url: 'https://example.com',
+          display_seconds: 10,
+        },
+      ];
       (axios.get as jest.Mock).mockResolvedValue({ data: mockResponse });
       const client = new signageApiClient('http://localhost', 'user', 'password');
       const result = await client.getAllCardIDmAndContentList();
@@ -99,11 +94,11 @@ describe('signageApiClient', () => {
     });
   });
 
-  describe('registerContentByCardIDm', () => {
+  describe('upsertContentByCardIDm', () => {
     it('カードIDmにコンテンツを登録することに成功した場合はCardSignageLinkを返すべきです', async () => {
       (axios.put as jest.Mock).mockResolvedValue({ data: mockCardSignageLink });
       const client = new signageApiClient('http://localhost', 'user', 'password');
-      const result = await client.registerContentByCardIDm(
+      const result = await client.upsertContentByCardIDm(
         '1234567890123456',
         'https://example.com',
         10,
@@ -111,7 +106,7 @@ describe('signageApiClient', () => {
 
       const expectedCardSignageLink: CardSignageLink = {
         status: 'success',
-        description: 'Succeeded registering content by cardIDm',
+        description: 'Content registered or updated successfully by cardIDm',
         cardIDm: '1234567890123456',
         url: 'https://example.com',
         displaySeconds: 10,
@@ -130,46 +125,9 @@ describe('signageApiClient', () => {
         new Error('Failed to register content by cardIDm'),
       );
       const client = new signageApiClient('http://localhost', 'user', 'password');
-      const result = client.registerContentByCardIDm('1234567890123456', 'https://example.com', 10);
+      const result = client.upsertContentByCardIDm('1234567890123456', 'https://example.com', 10);
 
       await expect(result).rejects.toThrow('Failed to register content by cardIDm');
-    });
-  });
-
-  describe('updateContentByCardIDm', () => {
-    it('カードIDmに紐づくコンテンツを更新することに成功した場合はCardSignageLinkを返すべきです', async () => {
-      (axios.patch as jest.Mock).mockResolvedValue({ data: mockCardSignageLink });
-      const client = new signageApiClient('http://localhost', 'user', 'password');
-      const result = await client.updateContentByCardIDm(
-        '1234567890123456',
-        'https://example.com',
-        10,
-      );
-
-      const expectedCardSignageLink: CardSignageLink = {
-        status: 'success',
-        description: 'Succeeded updating content by cardIDm',
-        cardIDm: '1234567890123456',
-        url: 'https://example.com',
-        displaySeconds: 10,
-      };
-
-      expect(result).toEqual(expectedCardSignageLink);
-      expect(axios.patch).toHaveBeenCalledWith(
-        'http://localhost/api/v1/signage/cards/1234567890123456',
-        { url: 'https://example.com', display_seconds: 10 },
-        { headers: { Authorization: expect.any(String), 'Content-Type': 'application/json' } },
-      );
-    });
-
-    it('更新に失敗した場合はエラーをスローするべきです', async () => {
-      (axios.patch as jest.Mock).mockRejectedValue(
-        new Error('Failed to update content by cardIDm'),
-      );
-      const client = new signageApiClient('http://localhost', 'user', 'password');
-      const result = client.updateContentByCardIDm('1234567890123456', 'https://example.com', 10);
-
-      await expect(result).rejects.toThrow('Failed to update content by cardIDm');
     });
   });
 });
