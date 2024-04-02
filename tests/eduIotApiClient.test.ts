@@ -1,11 +1,16 @@
-import axios from 'axios';
 import { EduIotApiClient } from '../src/index';
 import type { LockerApiResponse, LockerInfo, RoomApiResponse, RoomStatus } from '../src/types';
 import { dummyDescription } from '../src/utils';
 
-jest.mock('axios', () => ({
+const mockAxiosInstance = {
   get: jest.fn(),
   post: jest.fn(),
+  delete: jest.fn(),
+};
+
+// `axios.create()` の挙動をモック化して、上記のモックインスタンスを返すように設定
+jest.mock('axios', () => ({
+  create: jest.fn(() => mockAxiosInstance),
   isAxiosError: jest.fn((error) => Boolean(error?.isAxiosError)),
 }));
 
@@ -19,7 +24,7 @@ const mockLockerInfo: LockerApiResponse = {
 describe('EduIotApiClient', () => {
   describe('getLockerInfo', () => {
     it('locker infoの取得に成功した場合はLockerInfoを返すべきです', async () => {
-      (axios.get as jest.Mock).mockResolvedValue({ data: mockLockerInfo });
+      mockAxiosInstance.get.mockResolvedValue({ data: mockLockerInfo });
       const client = new EduIotApiClient('http://localhost', 'user', 'password');
       const result = await client.getLockerInfo();
 
@@ -31,13 +36,11 @@ describe('EduIotApiClient', () => {
       };
 
       expect(result).toEqual(expectedLockerInfo);
-      expect(axios.get).toHaveBeenCalledWith('http://localhost/locker', {
-        headers: { Authorization: expect.any(String) },
-      });
+      expect(mockAxiosInstance.get).toHaveBeenCalledWith('/locker');
     });
 
     it('locker infoの取得に503で失敗した場合はダミーを返すべきです', async () => {
-      (axios.get as jest.Mock).mockRejectedValue({ response: { status: 503 }, isAxiosError: true });
+      mockAxiosInstance.get.mockRejectedValue({ response: { status: 503 }, isAxiosError: true });
       const client = new EduIotApiClient('http://localhost', 'user', 'password');
       const result = await client.getLockerInfo();
 
@@ -53,7 +56,7 @@ describe('EduIotApiClient', () => {
 
     it('locker infoの取得に失敗した場合はエラーをスローするべきです', async () => {
       const client = new EduIotApiClient('http://localhost', 'user', 'password');
-      (axios.get as jest.Mock).mockRejectedValue(new Error('Failed to get locker info'));
+      mockAxiosInstance.get.mockRejectedValue(new Error('Failed to get locker info'));
       const result = client.getLockerInfo();
 
       await expect(result).rejects.toThrow('Failed to get locker info');
@@ -62,7 +65,7 @@ describe('EduIotApiClient', () => {
 
   describe('openLocker', () => {
     it('lockerの開錠に成功した場合はLockerInfoを返すべきです', async () => {
-      (axios.post as jest.Mock).mockResolvedValue({ data: mockLockerInfo });
+      mockAxiosInstance.post.mockResolvedValue({ data: mockLockerInfo });
       const client = new EduIotApiClient('http://localhost', 'user', 'password');
       const result = await client.openLocker();
 
@@ -74,13 +77,11 @@ describe('EduIotApiClient', () => {
       };
 
       expect(result).toEqual(expectedLockerInfo);
-      expect(axios.post).toHaveBeenCalledWith('http://localhost/locker/open', null, {
-        headers: { Authorization: expect.any(String) },
-      });
+      expect(mockAxiosInstance.post).toHaveBeenCalledWith('/locker/open', null);
     });
 
     it('lockerの開錠に503で失敗した場合はダミーを返すべきです', async () => {
-      (axios.post as jest.Mock).mockRejectedValue({
+      mockAxiosInstance.post.mockRejectedValue({
         response: { status: 503 },
         isAxiosError: true,
       });
@@ -98,7 +99,7 @@ describe('EduIotApiClient', () => {
     });
 
     it('lockerの開錠に失敗した場合はエラーをスローするべきです', async () => {
-      (axios.post as jest.Mock).mockRejectedValue(new Error('Failed to open locker'));
+      mockAxiosInstance.post.mockRejectedValue(new Error('Failed to open locker'));
       const client = new EduIotApiClient('http://localhost', 'user', 'password');
       const result = client.openLocker();
 
@@ -106,9 +107,11 @@ describe('EduIotApiClient', () => {
     });
   });
 
+  //TODO
   describe('getICCardInfo', () => {});
   describe('registerICCard', () => {});
   describe('deleteICCard', () => {});
+
   describe('getRoomStatus', () => {
     it('room statusの取得に成功した場合はRoomStatusを返すべきです', async () => {
       const sensors = ['temperature', 'humidity', 'illuminance', 'airpressure'];
@@ -118,7 +121,7 @@ describe('EduIotApiClient', () => {
         { roomNumber: 1111, sensorType: 'illuminance', value: 500 },
         { roomNumber: 1111, sensorType: 'airpressure', value: 1000 },
       ];
-      (axios.get as jest.Mock).mockResolvedValue({ data: mockRoomStatus });
+      mockAxiosInstance.get.mockResolvedValue({ data: mockRoomStatus });
       const client = new EduIotApiClient('http://localhost', 'user', 'password');
       const result = await client.getRoomStatus(1);
 
@@ -132,16 +135,13 @@ describe('EduIotApiClient', () => {
       };
 
       expect(result).toEqual(expectedRoomStatus);
-      expect(axios.get).toHaveBeenCalledWith(
-        `http://localhost/sensors/1?sensor_type=${sensors.join('+')}`,
-        {
-          headers: { Authorization: expect.any(String) },
-        },
+      expect(mockAxiosInstance.get).toHaveBeenCalledWith(
+        `/sensors/1?sensor_type=${sensors.join('+')}`,
       );
     });
 
     it('room statusの取得に503で失敗した場合はダミーを返すべきです', async () => {
-      (axios.get as jest.Mock).mockRejectedValue({ response: { status: 503 }, isAxiosError: true });
+      mockAxiosInstance.get.mockRejectedValue({ response: { status: 503 }, isAxiosError: true });
       const client = new EduIotApiClient('http://localhost', 'user', 'password');
       const result = await client.getRoomStatus(1);
 
@@ -158,7 +158,7 @@ describe('EduIotApiClient', () => {
     });
 
     it('room statusの取得に失敗した場合はエラーをスローするべきです', async () => {
-      (axios.get as jest.Mock).mockRejectedValue(new Error('Failed to get room status'));
+      mockAxiosInstance.get.mockRejectedValue(new Error('Failed to get room status'));
       const client = new EduIotApiClient('http://localhost', 'user', 'password');
       const result = client.getRoomStatus(1);
 

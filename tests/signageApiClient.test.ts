@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { SignageApiClient } from '../src';
 import type {
   AllCardSignageLinks,
@@ -8,11 +7,14 @@ import type {
   DeleteCardSignageLinkApiResponse,
 } from '../src/types';
 
-jest.mock('axios', () => ({
+const mockAxiosInstance = {
   get: jest.fn(),
   put: jest.fn(),
-  patch: jest.fn(),
   delete: jest.fn(),
+};
+
+jest.mock('axios', () => ({
+  create: jest.fn(() => mockAxiosInstance),
 }));
 
 const mockCardSignageLink: CardSignageLinkApiResponse = {
@@ -24,7 +26,7 @@ const mockCardSignageLink: CardSignageLinkApiResponse = {
 describe('SignageApiClient', () => {
   describe('getContentByCardIDm', () => {
     it('カードIDmに紐づくサイネージで表示するコンテンツを返すべきです', async () => {
-      (axios.get as jest.Mock).mockResolvedValue({ data: mockCardSignageLink });
+      mockAxiosInstance.get.mockResolvedValue({ data: mockCardSignageLink });
       const client = new SignageApiClient('http://localhost', 'user', 'password');
       const result = await client.getContentByCardIDm('1234567890123456');
 
@@ -37,16 +39,11 @@ describe('SignageApiClient', () => {
       };
 
       expect(result).toEqual(expectedCardSignageLink);
-      expect(axios.get).toHaveBeenCalledWith(
-        'http://localhost/api/v1/signage/cards/1234567890123456',
-        {
-          headers: { Authorization: expect.any(String) },
-        },
-      );
+      expect(mockAxiosInstance.get).toHaveBeenCalledWith('/api/v1/signage/cards/1234567890123456');
     });
 
     it('取得に失敗した場合はエラーをスローするべきです', async () => {
-      (axios.get as jest.Mock).mockRejectedValue(new Error('Failed to get content by cardIDm'));
+      mockAxiosInstance.get.mockRejectedValue(new Error('Failed to get content by cardIDm'));
       const client = new SignageApiClient('http://localhost', 'user', 'password');
       const result = client.getContentByCardIDm('1234567890123456');
 
@@ -63,7 +60,7 @@ describe('SignageApiClient', () => {
           display_seconds: 10,
         },
       ];
-      (axios.get as jest.Mock).mockResolvedValue({ data: mockResponse });
+      mockAxiosInstance.get.mockResolvedValue({ data: mockResponse });
       const client = new SignageApiClient('http://localhost', 'user', 'password');
       const result = await client.getAllCardIDmAndContentList();
 
@@ -80,13 +77,11 @@ describe('SignageApiClient', () => {
       };
 
       expect(result).toEqual(expectedResponse);
-      expect(axios.get).toHaveBeenCalledWith('http://localhost/api/v1/signage/cards', {
-        headers: { Authorization: expect.any(String) },
-      });
+      expect(mockAxiosInstance.get).toHaveBeenCalledWith('/api/v1/signage/cards');
     });
 
     it('取得に失敗した場合はエラーをスローするべきです', async () => {
-      (axios.get as jest.Mock).mockRejectedValue(
+      mockAxiosInstance.get.mockRejectedValue(
         new Error('Failed to get all cardIDm and content list'),
       );
       const client = new SignageApiClient('http://localhost', 'user', 'password');
@@ -98,7 +93,7 @@ describe('SignageApiClient', () => {
 
   describe('upsertContentByCardIDm', () => {
     it('カードIDmにコンテンツを登録することに成功した場合はCardSignageLinkを返すべきです', async () => {
-      (axios.put as jest.Mock).mockResolvedValue({ data: mockCardSignageLink });
+      mockAxiosInstance.put.mockResolvedValue({ data: mockCardSignageLink });
       const client = new SignageApiClient('http://localhost', 'user', 'password');
       const result = await client.upsertContentByCardIDm(
         '1234567890123456',
@@ -115,17 +110,15 @@ describe('SignageApiClient', () => {
       };
 
       expect(result).toEqual(expectedCardSignageLink);
-      expect(axios.put).toHaveBeenCalledWith(
-        'http://localhost/api/v1/signage/cards/1234567890123456',
+      expect(mockAxiosInstance.put).toHaveBeenCalledWith(
+        '/api/v1/signage/cards/1234567890123456',
         { url: 'https://example.com', display_seconds: 10 },
-        { headers: { Authorization: expect.any(String), 'Content-Type': 'application/json' } },
+        { headers: { 'Content-Type': 'application/json' } },
       );
     });
 
     it('登録に失敗した場合はエラーをスローするべきです', async () => {
-      (axios.put as jest.Mock).mockRejectedValue(
-        new Error('Failed to register content by cardIDm'),
-      );
+      mockAxiosInstance.put.mockRejectedValue(new Error('Failed to register content by cardIDm'));
       const client = new SignageApiClient('http://localhost', 'user', 'password');
       const result = client.upsertContentByCardIDm('1234567890123456', 'https://example.com', 10);
 
@@ -140,7 +133,7 @@ describe('SignageApiClient', () => {
         removed_count: 1,
       };
 
-      (axios.delete as jest.Mock).mockResolvedValue({ data: mockResponse });
+      mockAxiosInstance.delete.mockResolvedValue({ data: mockResponse });
       const client = new SignageApiClient('http://localhost', 'user', 'password');
       const result = await client.deleteContentByCardIDm('1234567890123456');
 
@@ -152,16 +145,13 @@ describe('SignageApiClient', () => {
       };
 
       expect(result).toEqual(expectedResponse);
-      expect(axios.delete).toHaveBeenCalledWith(
-        'http://localhost/api/v1/signage/cards/1234567890123456',
-        { headers: { Authorization: expect.any(String) } },
+      expect(mockAxiosInstance.delete).toHaveBeenCalledWith(
+        '/api/v1/signage/cards/1234567890123456',
       );
     });
 
     it('削除に失敗した場合はエラーをスローするべきです', async () => {
-      (axios.delete as jest.Mock).mockRejectedValue(
-        new Error('Failed to delete content by cardIDm'),
-      );
+      mockAxiosInstance.delete.mockRejectedValue(new Error('Failed to delete content by cardIDm'));
       const client = new SignageApiClient('http://localhost', 'user', 'password');
       const result = client.deleteContentByCardIDm('1234567890123456');
 
