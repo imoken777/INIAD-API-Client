@@ -21,9 +21,11 @@ export function makeBasicAuth(userId: string, password: string): string {
 }
 
 export function validateCardIDm(input: string): ValidatedCardIDm {
-  if (input.length === 16 && input.split('').every((char) => char >= '0' && char <= '9')) {
+  if (input.length === 16 && input.match(/^[0-9A-Z]+$/)) {
     return input as ValidatedCardIDm;
   } else {
-    throw new Error('The cardIDm string must be a 16-digit number');
+    throw new Error(
+      'The IDm entered is invalid: the IDm must consist of only 16 digits (0-9) and capital letters (A-Z)',
+    );
   }
 }

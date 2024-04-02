@@ -39,17 +39,17 @@ describe('makeBasicAuth', () => {
 
 describe('validateCardIDm', () => {
   it('正しい形式のカードIDmの場合はtrueを返すべきです', () => {
-    const input = '1234567890123456';
+    const input = '1A34567890123456';
     expect(validateCardIDm(input)).toEqual(input);
   });
 
   it('16桁でないカードIDmの場合はエラーをスローするべきです', () => {
-    const input = '123456789012';
+    const input = '1A3456789012';
     expect(() => validateCardIDm(input)).toThrow();
   });
 
-  it('数字以外が含まれるカードIDmの場合はエラーをスローするべきです', () => {
-    const input = '123456789012345a';
+  it('数字と大文字アルファベット以外が含まれるカードIDmの場合はエラーをスローするべきです', () => {
+    const input = '1A34-6789012345';
     expect(() => validateCardIDm(input)).toThrow();
   });
 });
