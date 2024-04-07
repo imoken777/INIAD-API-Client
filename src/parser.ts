@@ -22,35 +22,13 @@ export const parseToLockerInfo = (response: LockerApiResponse): LockerInfo => {
 };
 
 export const parseToRoomStatus = (statusInfo: StatusInfo, data: RoomApiResponse): RoomStatus => {
-  let temp: number | null = null;
-  let hum: number | null = null;
-  let illum: number | null = null;
-  let airPres: number | null = null;
-
-  // レスポンスデータをループして各センサー値を更新
-  data.forEach((item) => {
-    switch (item.sensorType) {
-      case 'temperature':
-        temp = item.value;
-        break;
-      case 'humidity':
-        hum = item.value;
-        break;
-      case 'illuminance':
-        illum = item.value;
-        break;
-      case 'airpressure':
-        airPres = item.value;
-        break;
-    }
-  });
-
   return {
-    ...statusInfo,
-    temperature: temp,
-    humidity: hum,
-    illuminance: illum,
-    airPressure: airPres,
+    status: statusInfo.status,
+    description: statusInfo.description,
+    temperature: data.find((item) => item.sensorType === 'temperature')?.value ?? null,
+    humidity: data.find((item) => item.sensorType === 'humidity')?.value ?? null,
+    illuminance: data.find((item) => item.sensorType === 'illuminance')?.value ?? null,
+    airPressure: data.find((item) => item.sensorType === 'airpressure')?.value ?? null,
   };
 };
 
@@ -90,7 +68,7 @@ export const parseToDeleteCardSignageLink = (
   return {
     status: statusInfo.status,
     description: statusInfo.description,
-    cardIDm: argCardIDm ?? null,
+    cardIDm: argCardIDm,
     removeCount: responseData.removed_count ?? null,
   };
 };
