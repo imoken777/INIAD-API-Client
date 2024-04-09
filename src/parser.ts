@@ -1,10 +1,14 @@
 import type {
   AllCardSignageLinks,
   AllCardSignageLinksApiResponse,
+  AllICCardApiResponse,
+  AllICCardInfo,
   CardSignageLink,
   CardSignageLinkApiResponse,
   DeleteCardSignageLink,
   DeleteCardSignageLinkApiResponse,
+  ICCardInfo,
+  ICCardInfoApiResponse,
   LockerApiResponse,
   LockerInfo,
   RoomApiResponse,
@@ -18,6 +22,32 @@ export const parseToLockerInfo = (response: LockerApiResponse): LockerInfo => {
     description: response.description,
     lockerAddress: response.name ?? null,
     lockerFloor: response.floor ?? null,
+  };
+};
+
+export const parseToICCardInfo = (
+  statusInfo: StatusInfo,
+  data: ICCardInfoApiResponse,
+): ICCardInfo => {
+  return {
+    status: statusInfo.status,
+    description: statusInfo.description,
+    cardIDm: data.uid,
+    icCardComment: data.comment,
+  };
+};
+
+export const parseToAllICCardInfo = (
+  statusInfo: StatusInfo,
+  data: AllICCardApiResponse,
+): AllICCardInfo => {
+  return {
+    status: statusInfo.status,
+    description: statusInfo.description,
+    cards: data.map((item) => ({
+      cardIDm: item.uid,
+      icCardComment: item.comment,
+    })),
   };
 };
 
