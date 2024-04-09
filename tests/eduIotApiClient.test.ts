@@ -14,6 +14,10 @@ jest.mock('axios', () => ({
   isAxiosError: jest.fn((error) => Boolean(error?.isAxiosError)),
 }));
 
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
 const mockLockerInfo: LockerApiResponse = {
   status: 'success',
   description: 'Succeeded',
@@ -107,9 +111,103 @@ describe('EduIotApiClient', () => {
     });
   });
 
+  describe('getAllICCardsInfo', () => {
+    it('ic card infoの取得に成功した場合はAllICCardInfoを返すべきです', async () => {
+      const mockAllICCardInfo = [
+        { id: 1, uid: '1234567890123456', comment: 'test1' },
+        { id: 2, uid: '1234567890123457', comment: 'test2' },
+      ];
+      mockAxiosInstance.get.mockResolvedValue({ data: mockAllICCardInfo });
+      const client = new EduIotApiClient('http://localhost', 'user', 'password');
+      const result = await client.getAllICCardsInfo();
+
+      const expectedAllICCardsInfo = {
+        status: 'success',
+        description: 'Succeeded getting all IC card information',
+        cards: [
+          { cardIDm: '1234567890123456', icCardComment: 'test1' },
+          { cardIDm: '1234567890123457', icCardComment: 'test2' },
+        ],
+      };
+
+      expect(result).toEqual(expectedAllICCardsInfo);
+      expect(mockAxiosInstance.get).toHaveBeenCalledWith('/iccards');
+    });
+
+    it('ic card infoの取得に503で失敗した場合はダミーを返すべきです', async () => {
+      mockAxiosInstance.get.mockRejectedValue({ response: { status: 503 }, isAxiosError: true });
+      const client = new EduIotApiClient('http://localhost', 'user', 'password');
+      const result = await client.getAllICCardsInfo();
+
+      const expectedAllICCardsInfo = {
+        status: 'dummy',
+        description: dummyDescription,
+        cards: [{ cardIDm: 'XXXXXXXXXXXXXXXX', icCardComment: 'dummy comment' }],
+      };
+
+      expect(result).toEqual(expectedAllICCardsInfo);
+    });
+
+    it('ic card infoの取得に失敗した場合はエラーをスローするべきです', async () => {
+      mockAxiosInstance.get.mockRejectedValue(new Error('Failed to get all IC card info'));
+      const client = new EduIotApiClient('http://localhost', 'user', 'password');
+      const result = client.getAllICCardsInfo();
+
+      await expect(result).rejects.toThrow('Failed to get all IC card info');
+    });
+  });
+  describe('registerICCard', () => {
+    it('ic cardの登録に成功した場合はICCardInfoを返すべきです', async () => {
+      const mockICCardInfo = {
+        status: 'success',
+        description: 'Succeeded registering IC card',
+        uid: '1234567890123456',
+        comment: 'test1',
+      };
+      mockAxiosInstance.post.mockResolvedValue({ data: mockICCardInfo });
+      const client = new EduIotApiClient('http://localhost', 'user', 'password');
+      const result = await client.registerICCard('1234567890123456', 'test1');
+
+      const expectedICCardInfo = {
+        status: 'success',
+        description: 'Succeeded registering IC card',
+        cardIDm: '1234567890123456',
+        icCardComment: 'test1',
+      };
+
+      expect(result).toEqual(expectedICCardInfo);
+      expect(mockAxiosInstance.post).toHaveBeenCalledWith('/iccards', expect.any(URLSearchParams), {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      });
+    });
+
+    it('ic cardの登録に503で失敗した場合はダミーを返すべきです', async () => {
+      mockAxiosInstance.post.mockRejectedValue({ response: { status: 503 }, isAxiosError: true });
+      const client = new EduIotApiClient('http://localhost', 'user', 'password');
+      const result = await client.registerICCard('1234567890123456', 'test1');
+
+      const expectedICCardInfo = {
+        status: 'dummy',
+        description: dummyDescription,
+        cardIDm: 'XXXXXXXXXXXXXXXX',
+        icCardComment: 'dummy comment',
+      };
+
+      expect(result).toEqual(expectedICCardInfo);
+    });
+
+    it('ic cardの登録に失敗した場合はエラーをスローするべきです', async () => {
+      mockAxiosInstance.post.mockRejectedValue(new Error('Failed to register IC card'));
+      const client = new EduIotApiClient('http://localhost', 'user', 'password');
+      const result = client.registerICCard('1234567890123456', 'test1');
+
+      await expect(result).rejects.toThrow('Failed to register IC card');
+    });
+  });
+
   //TODO
-  describe('getICCardInfo', () => {});
-  describe('registerICCard', () => {});
   describe('deleteICCard', () => {});
 
   describe('getRoomStatus', () => {
