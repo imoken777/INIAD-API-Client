@@ -38,21 +38,24 @@ export class EduIotApiClient {
       const response = await this.axiosInstance.get<LockerApiResponse>(requestUrl);
       const responseData = handleErrors<LockerApiResponse>(response);
 
-      return parseToLockerInfo({
+      const successInfo: StatusInfo = {
         status: 'success',
         description: 'Succeeded getting locker information',
-        name: responseData.name,
-        floor: responseData.floor,
-      });
+      };
+
+      return parseToLockerInfo(successInfo, responseData);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 503) {
-          return parseToLockerInfo({
+          const dummyInfo: StatusInfo = {
             status: 'dummy',
             description: dummyDescription,
+          };
+          const dummyData: LockerApiResponse = {
             name: '32XXXX',
             floor: 3,
-          });
+          };
+          return parseToLockerInfo(dummyInfo, dummyData);
         }
       }
       throw error;
@@ -66,21 +69,24 @@ export class EduIotApiClient {
       const response = await this.axiosInstance.post<LockerApiResponse>(requestUrl, null);
       const responseData = handleErrors<LockerApiResponse>(response);
 
-      return parseToLockerInfo({
+      const successInfo: StatusInfo = {
         status: 'success',
         description: 'Succeeded opening locker',
-        name: responseData.name,
-        floor: responseData.floor,
-      });
+      };
+
+      return parseToLockerInfo(successInfo, responseData);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 503) {
-          return parseToLockerInfo({
+          const dummyInfo: StatusInfo = {
             status: 'dummy',
             description: dummyDescription,
+          };
+          const dummyData: LockerApiResponse = {
             name: '32XXXX',
             floor: 3,
-          });
+          };
+          return parseToLockerInfo(dummyInfo, dummyData);
         }
       }
       throw error;
