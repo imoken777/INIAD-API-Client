@@ -1,19 +1,24 @@
 import axios from 'axios';
 import {
   parseToAllCardSignageLinks,
+  parseToAllICCardInfo,
   parseToCardSignageLink,
   parseToDeleteCardSignageLink,
+  parseToICCardInfo,
   parseToLockerInfo,
   parseToRoomStatus,
 } from './parser';
 import type {
   AllCardSignageLinks,
   AllCardSignageLinksApiResponse,
+  AllICCardApiResponse,
+  AllICCardInfo,
   CardSignageLink,
   CardSignageLinkApiResponse,
   DeleteCardSignageLink,
   DeleteCardSignageLinkApiResponse,
   ICCardInfo,
+  ICCardInfoApiResponse,
   LockerApiResponse,
   LockerInfo,
   RoomApiResponse,
@@ -91,35 +96,36 @@ export class EduIotApiClient {
     }
   }
 
-  public async getICCardsInfo(): Promise<ICCardInfo> {
-    const requestUrl = '/iccard';
+  public async getAllICCardsInfo(): Promise<AllICCardInfo> {
+    const requestUrl = '/iccards';
 
     try {
-      const response = await this.axiosInstance.get(requestUrl);
-      const responseData = handleErrors(response);
+      const response = await this.axiosInstance.get<AllICCardApiResponse>(requestUrl);
+      const responseData = handleErrors<AllICCardApiResponse>(response);
 
-      return {
+      const successInfo: StatusInfo = {
         status: 'success',
-        description: 'Succeeded getting IC card information',
-        cardIDm: responseData[0].uid,
-        icCardComment: responseData[0].comment,
+        description: 'Succeeded getting all IC card information',
       };
+      return parseToAllICCardInfo(successInfo, responseData);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 503) {
-          return {
+          const dummyInfo: StatusInfo = {
             status: 'dummy',
             description: dummyDescription,
-            cardIDm: 'XXXXXXXXXXXXXXXX',
-            icCardComment: 'dummy comment',
           };
+          const dummyData: AllICCardApiResponse = [
+            { id: 1, uid: 'XXXXXXXXXXXXXXXX', comment: 'dummy comment' },
+          ];
+          return parseToAllICCardInfo(dummyInfo, dummyData);
         }
       }
       throw error;
     }
   }
 
-  public async registerICCard(cardIDm: string, comment: string) {
+  public async registerICCard(cardIDm: string, comment: string): Promise<ICCardInfo> {
     const validatedCardIDm = validateCardIDm(cardIDm);
     const config = {
       headers: {
@@ -133,27 +139,40 @@ export class EduIotApiClient {
       data.append('uid', validatedCardIDm);
       data.append('comment', comment);
 
-      const response = await this.axiosInstance.post(requestUrl, data, config);
-      handleErrors(response);
+      const response = await this.axiosInstance.post<ICCardInfoApiResponse>(
+        requestUrl,
+        data,
+        config,
+      );
+      const responseData = handleErrors<ICCardInfoApiResponse>(response);
 
-      return {
+      const successInfo: StatusInfo = {
         status: 'success',
         description: 'Succeeded registering IC card',
       };
+
+      return parseToICCardInfo(successInfo, responseData);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 503) {
-          return {
+          const dummyInfo: StatusInfo = {
             status: 'dummy',
             description: dummyDescription,
           };
+          const dummyData: ICCardInfoApiResponse = {
+            id: 1,
+            uid: 'XXXXXXXXXXXXXXXX',
+            comment: 'dummy comment',
+          };
+
+          return parseToICCardInfo(dummyInfo, dummyData);
         }
       }
       throw error;
     }
   }
 
-  public async deleteICCard(cardIDm: string, comment: string) {
+  public async deleteICCard(cardIDm: string, comment: string): Promise<StatusInfo> {
     const validatedCardIDm = validateCardIDm(cardIDm);
     const data = new URLSearchParams();
     data.append('uid', validatedCardIDm);
@@ -164,6 +183,7 @@ export class EduIotApiClient {
       },
       data,
     };
+    //TODO: 本当に/1でいいのか確認
     const requestUrl = '/iccards/1';
     try {
       const response = await this.axiosInstance.delete(requestUrl, config);
