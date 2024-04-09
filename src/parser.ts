@@ -16,12 +16,12 @@ import type {
   StatusInfo,
 } from './types';
 
-export const parseToLockerInfo = (response: LockerApiResponse): LockerInfo => {
+export const parseToLockerInfo = (statusInfo: StatusInfo, data: LockerApiResponse): LockerInfo => {
   return {
-    status: response.status,
-    description: response.description,
-    lockerAddress: response.name ?? null,
-    lockerFloor: response.floor ?? null,
+    status: statusInfo.status,
+    description: statusInfo.description,
+    lockerAddress: data.name ?? null,
+    lockerFloor: data.floor ?? null,
   };
 };
 
