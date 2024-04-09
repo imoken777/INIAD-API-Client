@@ -7,8 +7,8 @@ export type ValidatedCardIDm = string & { readonly __brand: unique symbol };
 
 //TODO: statusInfoはaxiosResponseが持つのでここではもたない
 export type LockerApiResponse = StatusInfo & {
-  name?: string;
-  floor?: number;
+  readonly name?: string;
+  readonly floor?: number;
 };
 
 export type LockerInfo = StatusInfo & {
@@ -16,9 +16,26 @@ export type LockerInfo = StatusInfo & {
   readonly lockerFloor: number | null;
 };
 
-export type ICCardInfo = StatusInfo & {
-  readonly cardIDm: string | null;
-  readonly icCardComment: string | null;
+export type ICCardInfoApiResponse = {
+  readonly id: number;
+  readonly uid: string;
+  readonly comment: string;
+};
+
+export type ICCardInfo<IncludeStatusInfo = true> = IncludeStatusInfo extends true
+  ? StatusInfo & {
+      readonly cardIDm: string | null;
+      readonly icCardComment: string | null;
+    }
+  : {
+      readonly cardIDm: string | null;
+      readonly icCardComment: string | null;
+    };
+
+export type AllICCardApiResponse = Array<ICCardInfoApiResponse>;
+
+export type AllICCardInfo = StatusInfo & {
+  readonly cards: ICCardInfo<false>[];
 };
 
 export type RoomApiResponse = Array<{
