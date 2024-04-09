@@ -79,13 +79,12 @@ export class SignageApiClient {
     );
     const responseData = handleErrors(response);
 
-    return {
+    const successInfo: StatusInfo = {
       status: 'success',
       description: 'Content registered or updated successfully by cardIDm',
-      cardIDm: responseData.idm,
-      url: responseData.url,
-      displaySeconds: responseData.display_seconds,
     };
+
+    return parseToCardSignageLink(successInfo, responseData);
   }
 
   //カードIDmに紐づくサイネージで表示するコンテンツを削除する関数
