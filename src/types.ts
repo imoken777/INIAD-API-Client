@@ -5,8 +5,7 @@ export interface StatusInfo {
 
 export type ValidatedCardIDm = string & { readonly __brand: unique symbol };
 
-//TODO: statusInfoはaxiosResponseが持つのでここではもたない
-export type LockerApiResponse = StatusInfo & {
+export type LockerApiResponse = {
   readonly name?: string;
   readonly floor?: number;
 };
