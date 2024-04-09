@@ -19,8 +19,6 @@ beforeEach(() => {
 });
 
 const mockLockerInfo: LockerApiResponse = {
-  status: 'success',
-  description: 'Succeeded',
   name: '32XXXX',
   floor: 3,
 };
