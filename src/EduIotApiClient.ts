@@ -210,6 +210,7 @@ export class EduIotApiClient {
     try {
       const response = await this.axiosInstance.get<RoomApiResponse>(requestUrl);
       const responseData = handleErrors<RoomApiResponse>(response);
+
       const successStatusInfo: StatusInfo = {
         status: 'success',
         description: 'Succeeded getting room status',
@@ -223,10 +224,10 @@ export class EduIotApiClient {
             description: dummyDescription,
           };
           const dummyResponse: RoomApiResponse = [
-            { roomNumber, sensorType: 'temperature', value: 30.9 },
-            { roomNumber, sensorType: 'humidity', value: 55.5 },
-            { roomNumber, sensorType: 'illuminance', value: 100 },
-            { roomNumber, sensorType: 'airpressure', value: 1006 },
+            { room_num: 1, sensor_type: 'temperature', value: 30.9 },
+            { room_num: 1, sensor_type: 'humidity', value: 55.5 },
+            { room_num: 1, sensor_type: 'illuminance', value: 100 },
+            { room_num: 1, sensor_type: 'airpressure', value: 1006 },
           ];
           return parseToRoomStatus(dummyStatusInfo, dummyResponse);
         }

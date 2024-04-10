@@ -38,8 +38,8 @@ export type AllICCardInfo = StatusInfo & {
 };
 
 export type RoomApiResponse = Array<{
-  readonly roomNumber: number;
-  readonly sensorType: string;
+  readonly room_num: number;
+  readonly sensor_type: string;
   readonly value: number | null;
 }>;
 
