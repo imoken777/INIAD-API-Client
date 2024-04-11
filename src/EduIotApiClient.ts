@@ -169,21 +169,11 @@ export class EduIotApiClient {
     }
   }
 
-  public async deleteICCard(cardIDm: string, comment: string): Promise<StatusInfo> {
-    const validatedCardIDm = validateCardIDm(cardIDm);
-    const data = new URLSearchParams();
-    data.append('uid', validatedCardIDm);
-    data.append('comment', comment);
-    const config = {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      data,
-    };
-    //TODO: 本当に/1でいいのか確認
+  public async deleteICCard(): Promise<StatusInfo> {
     const requestUrl = '/iccards/1';
+
     try {
-      const response = await this.axiosInstance.delete(requestUrl, config);
+      const response = await this.axiosInstance.delete(requestUrl);
       handleErrors(response);
 
       return {

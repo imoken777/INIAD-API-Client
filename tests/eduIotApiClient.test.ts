@@ -205,8 +205,43 @@ describe('EduIotApiClient', () => {
     });
   });
 
-  //TODO
-  describe('deleteICCard', () => {});
+  describe('deleteICCard', () => {
+    it('ic cardの削除に成功した場合はStatusInfoを返すべきです', async () => {
+      const mockMessage = { message: 'ICCard No.1 was deleted' };
+      mockAxiosInstance.delete.mockResolvedValue({ data: mockMessage });
+      const client = new EduIotApiClient('http://localhost', 'user', 'password');
+      const result = await client.deleteICCard();
+
+      const expectedStatusInfo = {
+        status: 'success',
+        description: 'Succeeded deleting IC card',
+      };
+
+      expect(result).toEqual(expectedStatusInfo);
+      expect(mockAxiosInstance.delete).toHaveBeenCalledWith('/iccards/1');
+    });
+
+    it('ic cardの削除に503で失敗した場合はダミーを返すべきです', async () => {
+      mockAxiosInstance.delete.mockRejectedValue({ response: { status: 503 }, isAxiosError: true });
+      const client = new EduIotApiClient('http://localhost', 'user', 'password');
+      const result = await client.deleteICCard();
+
+      const expectedStatusInfo = {
+        status: 'dummy',
+        description: dummyDescription,
+      };
+
+      expect(result).toEqual(expectedStatusInfo);
+    });
+
+    it('ic cardの削除に失敗した場合はエラーをスローするべきです', async () => {
+      mockAxiosInstance.delete.mockRejectedValue(new Error('Failed to delete IC card'));
+      const client = new EduIotApiClient('http://localhost', 'user', 'password');
+      const result = client.deleteICCard();
+
+      await expect(result).rejects.toThrow('Failed to delete IC card');
+    });
+  });
 
   describe('getRoomStatus', () => {
     it('room statusの取得に成功した場合はRoomStatusを返すべきです', async () => {
