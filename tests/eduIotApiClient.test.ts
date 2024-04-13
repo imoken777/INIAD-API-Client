@@ -1,5 +1,6 @@
+import type { LockerInfo, RoomStatus } from '../src/index';
 import { EduIotApiClient } from '../src/index';
-import type { LockerApiResponse, LockerInfo, RoomApiResponse, RoomStatus } from '../src/types';
+import type { LockerApiResponse, RoomApiResponse } from '../src/types/internal';
 import { dummyDescription } from '../src/utils';
 
 const mockAxiosInstance = {

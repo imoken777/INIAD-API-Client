@@ -1,5 +1,5 @@
 import type { AxiosResponse } from 'axios';
-import type { ValidatedCardIDm } from './types';
+import type { ValidatedCardIDm } from './types/internal';
 
 export const dummyDescription = 'Dummy data is displayed for access from outside the INIAD Wi-Fi.';
 

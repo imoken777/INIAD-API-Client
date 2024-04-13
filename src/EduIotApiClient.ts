@@ -5,17 +5,14 @@ import {
   parseToLockerInfo,
   parseToRoomStatus,
 } from './parser';
+
 import type {
   AllICCardApiResponse,
-  AllICCardInfo,
-  ICCardInfo,
   ICCardInfoApiResponse,
   LockerApiResponse,
-  LockerInfo,
   RoomApiResponse,
-  RoomStatus,
-  StatusInfo,
-} from './types';
+} from './types/internal';
+import type { AllICCardInfo, ICCardInfo, LockerInfo, RoomStatus, StatusInfo } from './types/public';
 import { dummyDescription, handleErrors, makeBasicAuth, validateCardIDm } from './utils';
 
 export class EduIotApiClient {

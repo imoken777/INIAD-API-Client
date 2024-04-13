@@ -4,15 +4,18 @@ import {
   parseToCardSignageLink,
   parseToDeleteCardSignageLink,
 } from './parser';
+
+import type {
+  AllCardSignageLinksApiResponse,
+  CardSignageLinkApiResponse,
+  DeleteCardSignageLinkApiResponse,
+} from './types/internal';
 import type {
   AllCardSignageLinks,
-  AllCardSignageLinksApiResponse,
   CardSignageLink,
-  CardSignageLinkApiResponse,
   DeleteCardSignageLink,
-  DeleteCardSignageLinkApiResponse,
   StatusInfo,
-} from './types';
+} from './types/public';
 import { handleErrors, makeBasicAuth, validateCardIDm } from './utils';
 
 export class SignageApiClient {

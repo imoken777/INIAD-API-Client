@@ -1,11 +1,10 @@
+import type { AllCardSignageLinks, CardSignageLink } from '../src';
 import { SignageApiClient } from '../src';
 import type {
-  AllCardSignageLinks,
   AllCardSignageLinksApiResponse,
-  CardSignageLink,
   CardSignageLinkApiResponse,
   DeleteCardSignageLinkApiResponse,
-} from '../src/types';
+} from '../src/types/internal';
 
 const mockAxiosInstance = {
   get: jest.fn(),

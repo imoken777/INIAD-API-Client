@@ -1,20 +1,22 @@
 import type {
-  AllCardSignageLinks,
   AllCardSignageLinksApiResponse,
   AllICCardApiResponse,
-  AllICCardInfo,
-  CardSignageLink,
   CardSignageLinkApiResponse,
-  DeleteCardSignageLink,
   DeleteCardSignageLinkApiResponse,
-  ICCardInfo,
   ICCardInfoApiResponse,
   LockerApiResponse,
-  LockerInfo,
   RoomApiResponse,
+} from './types/internal';
+import type {
+  AllCardSignageLinks,
+  AllICCardInfo,
+  CardSignageLink,
+  DeleteCardSignageLink,
+  ICCardInfo,
+  LockerInfo,
   RoomStatus,
   StatusInfo,
-} from './types';
+} from './types/public';
 
 export const parseToLockerInfo = (statusInfo: StatusInfo, data: LockerApiResponse): LockerInfo => {
   return {
