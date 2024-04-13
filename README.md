@@ -1,5 +1,9 @@
 ## INIAD API Node
 
+![npm](https://img.shields.io/npm/v/iniad-api-node)
+![node](https://img.shields.io/node/v/iniad-api-node)
+![License](https://img.shields.io/badge/license-MIT-green)
+
 INIAD APIの非公式Node.jsクライアントライブラリです。
 
 本ライブラリは、INIADのアカウントを持つユーザーのみがアクセス可能な[INIAD開発者サイト](https://sites.google.com/iniad.org/developers?pli=1&authuser=0) に準拠しています。そこに記載されている教育用IoT APIとサイネージAPIの利用をサポートします。OpenAI APIには対応していません。
@@ -27,20 +31,13 @@ npm install iniad-api-node
 以下はES Modulesを使用した例です。
 
 ```
-import { eduIotApiClient } from 'iniad-api-node';
-const iotClient = new eduIotApiClient(baseUrl, userId, password);
+import { EduIotApiClient } from 'iniad-api-node';
+const iotClient = new EduIotApiClient(baseUrl, userId, password);
 
 (async () => {
     const lockerInfo = await iotClient.getLockerInfo();
     console.log(lockerInfo.lockerAddress);
 })();
-```
-
-CommonJSを使用する場合は、以下のようになります。
-
-```
-const { eduIotApiClient } = require('iniad-api-node');
-const iotClient = new eduIotApiClient(baseUrl, userId, password);
 ```
 
 ### コントリビュート

@@ -4,7 +4,7 @@ const baseUrl = process.env.BASE_URL;
 const userId = process.env.USER_ID;
 const password = process.env.PASSWORD;
 
-const iotClient = new iniad.eduIotApiClient({ baseUrl, userId, password });
+const iotClient = new iniad.EduIotApiClient({ baseUrl, userId, password });
 
 (async () => {
   try {
