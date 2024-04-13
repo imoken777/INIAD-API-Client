@@ -1,29 +1,51 @@
 {
   "name": "iniad-api-node",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "iniad-api-node is an unofficial node.js client for INIAD API",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "author": "imoken",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/imoken777/iniad-api-node"
+  },
+  "bugs": "https://github.com/imoken777/iniad-api-node/issues",
+  "homepage": "https://github.com/imoken777/iniad-api-node/#readme",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "keywords": [
+    "iniad",
+    "api",
+    "node"
+  ],
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
   "scripts": {
     "test": "jest",
     "lint": "eslint . ",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "build": "tsc"
   },
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
     "@types/jest": "^29.5.12",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
     "@typescript-eslint/parser": "^7.2.0",
     "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
     "jest": "^29.7.0",
     "prettier": "3.2.5",
     "prettier-plugin-organize-imports": "^3.2.4",
     "ts-jest": "^29.1.2",
-    "typescript": "^5.4.2",
-    "eslint-config-prettier": "^9.1.0"
+    "typescript": "^5.4.2"
   },
   "dependencies": {
     "@types/node": "^20.11.25",
-    "axios": "^1.6.7"
+    "axios": "^1.6.7",
+    "follow-redirects": "^1.15.6"
   }
 }
