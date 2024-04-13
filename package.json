@@ -13,7 +13,7 @@
   "bugs": "https://github.com/imoken777/iniad-api-node/issues",
   "homepage": "https://github.com/imoken777/iniad-api-node/#readme",
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=16.0.0"
   },
   "keywords": [
     "iniad",
