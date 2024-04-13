@@ -16,7 +16,7 @@ export const handleErrors = <T>(response: AxiosResponse<T>): T => {
 
 export const makeBasicAuth = (userId: string, password: string): string => {
   const token = `${userId}:${password}`;
-  const hash = btoa(token);
+  const hash = Buffer.from(token).toString('base64');
   return `Basic ${hash}`;
 };
 

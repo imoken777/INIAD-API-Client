@@ -31,7 +31,9 @@ describe('makeBasicAuth', () => {
   it('正しくフォーマットされた基本認証ヘッダーを返すべきです', () => {
     const userId = 'user';
     const password = 'password';
-    const expectedAuthHeader = `Basic ${btoa(`${userId}:${password}`)}`;
+    const token = `${userId}:${password}`;
+    const hash = Buffer.from(token).toString('base64');
+    const expectedAuthHeader = `Basic ${hash}`;
 
     expect(makeBasicAuth(userId, password)).toEqual(expectedAuthHeader);
   });
