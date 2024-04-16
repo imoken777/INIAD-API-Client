@@ -1,10 +1,10 @@
-import * as iniad from 'iniad-iot-client';
+import { EduIotApiClient } from 'iniad-api-node';
 
 const baseUrl = process.env.BASE_URL;
 const userId = process.env.USER_ID;
 const password = process.env.PASSWORD;
 
-const iotClient = new iniad.EduIotApiClient({ baseUrl, userId, password });
+const iotClient = new EduIotApiClient({ baseUrl, userId, password });
 
 (async () => {
   try {
