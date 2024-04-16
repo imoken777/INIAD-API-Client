@@ -26,6 +26,7 @@
     "README.md"
   ],
   "scripts": {
+    "prepublishOnly": "npm run build",
     "test": "jest",
     "lint": "eslint . ",
     "lint:fix": "eslint . --fix",
@@ -45,7 +46,6 @@
   },
   "dependencies": {
     "@types/node": "^20.11.25",
-    "axios": "^1.6.7",
-    "follow-redirects": "^1.15.6"
+    "axios": "^1.6.7"
   }
 }
