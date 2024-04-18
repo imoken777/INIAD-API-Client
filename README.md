@@ -18,7 +18,7 @@ INIAD APIの非公式Node.jsクライアントライブラリです。
 
 npmを使用して簡単にインストールできます。
 
-```
+```sh
 npm install iniad-api-node
 ```
 
@@ -30,7 +30,7 @@ npm install iniad-api-node
 
 以下はES Modulesを使用した例です。
 
-```
+```typescript
 import { EduIotApiClient } from 'iniad-api-node';
 const iotClient = new EduIotApiClient(baseUrl, userId, password);
 
