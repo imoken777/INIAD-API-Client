@@ -6,26 +6,26 @@ export type LockerApiResponse = {
 };
 
 export type ICCardInfoApiResponse = {
-  readonly id: number;
-  readonly uid: string;
-  readonly comment: string;
+  readonly id?: number;
+  readonly uid?: string;
+  readonly comment?: string;
 };
 export type AllICCardApiResponse = Array<ICCardInfoApiResponse>;
 
 export type RoomApiResponse = Array<{
-  readonly room_num: number;
-  readonly sensor_type: string;
-  readonly value: number | null;
+  readonly room_num?: number;
+  readonly sensor_type?: string;
+  readonly value?: number | null;
 }>;
 
 export type CardSignageLinkApiResponse = {
-  readonly idm: string;
-  readonly url: string;
-  readonly display_seconds: number;
+  readonly idm?: string;
+  readonly url?: string;
+  readonly display_seconds?: number;
 };
 export type AllCardSignageLinksApiResponse = Array<CardSignageLinkApiResponse>;
 
 export type DeleteCardSignageLinkApiResponse = {
-  readonly message: string;
-  readonly removed_count: number;
+  readonly message?: string;
+  readonly removed_count?: number;
 };

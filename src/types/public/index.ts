@@ -31,14 +31,14 @@ export type RoomStatus = StatusInfo & {
 
 export type CardSignageLink<IncludeStatusInfo = true> = IncludeStatusInfo extends true
   ? StatusInfo & {
-      readonly cardIDm: string;
-      readonly url: string;
-      readonly displaySeconds: number;
+      readonly cardIDm: string | null;
+      readonly url: string | null;
+      readonly displaySeconds: number | null;
     }
   : {
-      readonly cardIDm: string;
-      readonly url: string;
-      readonly displaySeconds: number;
+      readonly cardIDm: string | null;
+      readonly url: string | null;
+      readonly displaySeconds: number | null;
     };
 
 export type AllCardSignageLinks = StatusInfo & {
@@ -46,6 +46,6 @@ export type AllCardSignageLinks = StatusInfo & {
 };
 
 export type DeleteCardSignageLink = StatusInfo & {
-  readonly cardIDm: string;
-  readonly removeCount: number;
+  readonly cardIDm: string | null;
+  readonly removeCount: number | null;
 };

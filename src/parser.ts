@@ -34,8 +34,8 @@ export const parseToICCardInfo = (
   return {
     status: statusInfo.status,
     description: statusInfo.description,
-    cardIDm: data.uid,
-    icCardComment: data.comment,
+    cardIDm: data.uid ?? null,
+    icCardComment: data.comment ?? null,
   };
 };
 
@@ -47,8 +47,8 @@ export const parseToAllICCardInfo = (
     status: statusInfo.status,
     description: statusInfo.description,
     cards: data.map((item) => ({
-      cardIDm: item.uid,
-      icCardComment: item.comment,
+      cardIDm: item.uid ?? null,
+      icCardComment: item.comment ?? null,
     })),
   };
 };
