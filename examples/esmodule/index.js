@@ -1,4 +1,4 @@
-import { EduIotApiClient } from 'iniad-api-node';
+import { EduIotApiClient } from 'iniad-api-client';
 
 const baseUrl = process.env.BASE_URL;
 const userId = process.env.USER_ID;

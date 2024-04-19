@@ -1,9 +1,9 @@
 {
   "name": "iniad-node-example-esmodule",
-  "description": "Example for iniad-api-node using ES Modules",
+  "description": "Example for iniad-api-client using ES Modules",
   "main": "index.js",
   "type": "module",
   "dependencies": {
-    "iniad-api-node": "file:../../"
+    "iniad-api-client": "file:../../"
   }
 }
