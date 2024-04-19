@@ -18,10 +18,10 @@ import { dummyDescription, handleErrors, makeBasicAuth, validateCardIDm } from '
 export class EduIotApiClient {
   private axiosInstance;
 
-  constructor(baseUrl: string, userId: string, password: string) {
+  constructor(userId: string, password: string) {
     const authHeader = makeBasicAuth(userId, password);
     this.axiosInstance = axios.create({
-      baseURL: baseUrl,
+      baseURL: 'https://proxy-iniad-eduiot-api.imoken27.workers.dev',
       headers: {
         Authorization: authHeader,
       },
@@ -30,7 +30,7 @@ export class EduIotApiClient {
 
   //ユーザーのロッカーの情報を返す関数
   public async getLockerInfo(): Promise<LockerInfo> {
-    const requestUrl = '/locker';
+    const requestUrl = '/api/v1/locker';
 
     try {
       const response = await this.axiosInstance.get<LockerApiResponse>(requestUrl);
@@ -62,7 +62,7 @@ export class EduIotApiClient {
 
   //ユーザーのロッカーを開ける関数
   public async openLocker(): Promise<LockerInfo> {
-    const requestUrl = '/locker/open';
+    const requestUrl = '/api/v1/locker/open';
 
     try {
       const response = await this.axiosInstance.post<LockerApiResponse>(requestUrl, null);
@@ -94,7 +94,7 @@ export class EduIotApiClient {
 
   //ユーザーの登録済みのICカードの情報を返す関数
   public async getAllICCardsInfo(): Promise<AllICCardInfo> {
-    const requestUrl = '/iccards';
+    const requestUrl = '/api/v1/iccards';
 
     try {
       const response = await this.axiosInstance.get<AllICCardApiResponse>(requestUrl);
@@ -130,7 +130,7 @@ export class EduIotApiClient {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
     };
-    const requestUrl = '/iccards';
+    const requestUrl = '/api/v1/iccards';
 
     try {
       const data = new URLSearchParams();
@@ -172,7 +172,7 @@ export class EduIotApiClient {
 
   //ユーザーの登録済みのICカードを削除する関数
   public async deleteICCard(): Promise<StatusInfo> {
-    const requestUrl = '/iccards/1';
+    const requestUrl = '/api/v1/iccards/1';
 
     try {
       const response = await this.axiosInstance.delete(requestUrl);
@@ -198,7 +198,7 @@ export class EduIotApiClient {
   //指定した教室番号のセンサー情報を返す関数
   public async getRoomStatus(roomNumber: number): Promise<RoomStatus> {
     const sensors = ['temperature', 'humidity', 'illuminance', 'airpressure'];
-    const requestUrl = `/sensors/${roomNumber}?sensor_type=${sensors.join('+')}`;
+    const requestUrl = `/api/v1/sensors/${roomNumber}?sensor_type=${sensors.join('+')}`;
 
     try {
       const response = await this.axiosInstance.get<RoomApiResponse>(requestUrl);

@@ -21,10 +21,10 @@ import { handleErrors, makeBasicAuth, validateCardIDm } from './utils';
 export class SignageApiClient {
   private axiosInstance;
 
-  constructor(baseUrl: string, userId: string, password: string) {
+  constructor(userId: string, password: string) {
     const authHeader = makeBasicAuth(userId, password);
     this.axiosInstance = axios.create({
-      baseURL: baseUrl,
+      baseURL: 'https://proxy-iniad-signage-api.imoken27.workers.dev',
       headers: {
         Authorization: authHeader,
       },
