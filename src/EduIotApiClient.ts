@@ -28,6 +28,7 @@ export class EduIotApiClient {
     });
   }
 
+  //ユーザーのロッカーの情報を返す関数
   public async getLockerInfo(): Promise<LockerInfo> {
     const requestUrl = '/locker';
 
@@ -59,6 +60,7 @@ export class EduIotApiClient {
     }
   }
 
+  //ユーザーのロッカーを開ける関数
   public async openLocker(): Promise<LockerInfo> {
     const requestUrl = '/locker/open';
 
@@ -90,6 +92,7 @@ export class EduIotApiClient {
     }
   }
 
+  //ユーザーの登録済みのICカードの情報を返す関数
   public async getAllICCardsInfo(): Promise<AllICCardInfo> {
     const requestUrl = '/iccards';
 
@@ -119,6 +122,7 @@ export class EduIotApiClient {
     }
   }
 
+  //ICカードを登録する関数
   public async registerICCard(cardIDm: string, comment: string): Promise<ICCardInfo> {
     const validatedCardIDm = validateCardIDm(cardIDm);
     const config = {
@@ -166,6 +170,7 @@ export class EduIotApiClient {
     }
   }
 
+  //ユーザーの登録済みのICカードを削除する関数
   public async deleteICCard(): Promise<StatusInfo> {
     const requestUrl = '/iccards/1';
 
@@ -190,6 +195,7 @@ export class EduIotApiClient {
     }
   }
 
+  //指定した教室番号のセンサー情報を返す関数
   public async getRoomStatus(roomNumber: number): Promise<RoomStatus> {
     const sensors = ['temperature', 'humidity', 'illuminance', 'airpressure'];
     const requestUrl = `/sensors/${roomNumber}?sensor_type=${sensors.join('+')}`;
