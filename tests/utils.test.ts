@@ -32,7 +32,7 @@ describe('makeBasicAuth', () => {
     const userId = 'user';
     const password = 'password';
     const token = `${userId}:${password}`;
-    const hash = Buffer.from(token).toString('base64');
+    const hash = btoa(token);
     const expectedAuthHeader = `Basic ${hash}`;
 
     expect(makeBasicAuth(userId, password)).toEqual(expectedAuthHeader);

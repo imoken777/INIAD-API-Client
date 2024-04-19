@@ -26,7 +26,7 @@ describe('SignageApiClient', () => {
   describe('getContentByCardIDm', () => {
     it('カードIDmに紐づくサイネージで表示するコンテンツを返すべきです', async () => {
       mockAxiosInstance.get.mockResolvedValue({ data: mockCardSignageLink });
-      const client = new SignageApiClient('http://localhost', 'user', 'password');
+      const client = new SignageApiClient('user', 'password');
       const result = await client.getContentByCardIDm('1234567890123456');
 
       const expectedCardSignageLink: CardSignageLink = {
@@ -43,7 +43,7 @@ describe('SignageApiClient', () => {
 
     it('取得に失敗した場合はエラーをスローするべきです', async () => {
       mockAxiosInstance.get.mockRejectedValue(new Error('Failed to get content by cardIDm'));
-      const client = new SignageApiClient('http://localhost', 'user', 'password');
+      const client = new SignageApiClient('user', 'password');
       const result = client.getContentByCardIDm('1234567890123456');
 
       await expect(result).rejects.toThrow('Failed to get content by cardIDm');
@@ -60,7 +60,7 @@ describe('SignageApiClient', () => {
         },
       ];
       mockAxiosInstance.get.mockResolvedValue({ data: mockResponse });
-      const client = new SignageApiClient('http://localhost', 'user', 'password');
+      const client = new SignageApiClient('user', 'password');
       const result = await client.getAllCardIDmAndContentList();
 
       const expectedResponse: AllCardSignageLinks = {
@@ -83,7 +83,7 @@ describe('SignageApiClient', () => {
       mockAxiosInstance.get.mockRejectedValue(
         new Error('Failed to get all cardIDm and content list'),
       );
-      const client = new SignageApiClient('http://localhost', 'user', 'password');
+      const client = new SignageApiClient('user', 'password');
       const result = client.getAllCardIDmAndContentList();
 
       await expect(result).rejects.toThrow('Failed to get all cardIDm and content list');
@@ -93,7 +93,7 @@ describe('SignageApiClient', () => {
   describe('upsertContentByCardIDm', () => {
     it('カードIDmにコンテンツを登録することに成功した場合はCardSignageLinkを返すべきです', async () => {
       mockAxiosInstance.put.mockResolvedValue({ data: mockCardSignageLink });
-      const client = new SignageApiClient('http://localhost', 'user', 'password');
+      const client = new SignageApiClient('user', 'password');
       const result = await client.upsertContentByCardIDm(
         '1234567890123456',
         'https://example.com',
@@ -118,7 +118,7 @@ describe('SignageApiClient', () => {
 
     it('登録に失敗した場合はエラーをスローするべきです', async () => {
       mockAxiosInstance.put.mockRejectedValue(new Error('Failed to register content by cardIDm'));
-      const client = new SignageApiClient('http://localhost', 'user', 'password');
+      const client = new SignageApiClient('user', 'password');
       const result = client.upsertContentByCardIDm('1234567890123456', 'https://example.com', 10);
 
       await expect(result).rejects.toThrow('Failed to register content by cardIDm');
@@ -133,7 +133,7 @@ describe('SignageApiClient', () => {
       };
 
       mockAxiosInstance.delete.mockResolvedValue({ data: mockResponse });
-      const client = new SignageApiClient('http://localhost', 'user', 'password');
+      const client = new SignageApiClient('user', 'password');
       const result = await client.deleteContentByCardIDm('1234567890123456');
 
       const expectedResponse = {
@@ -151,7 +151,7 @@ describe('SignageApiClient', () => {
 
     it('削除に失敗した場合はエラーをスローするべきです', async () => {
       mockAxiosInstance.delete.mockRejectedValue(new Error('Failed to delete content by cardIDm'));
-      const client = new SignageApiClient('http://localhost', 'user', 'password');
+      const client = new SignageApiClient('user', 'password');
       const result = client.deleteContentByCardIDm('1234567890123456');
 
       await expect(result).rejects.toThrow('Failed to delete content by cardIDm');
