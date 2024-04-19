@@ -1,17 +1,17 @@
 {
-  "name": "iniad-api-node",
+  "name": "iniad-api-client",
   "version": "1.0.0",
-  "description": "iniad-api-node is an unofficial node.js client for INIAD API",
+  "description": "iniad-api-client is an unofficial client for INIAD API",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "author": "imoken",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/imoken777/iniad-api-node"
+    "url": "git://github.com/imoken777/INIAD-API-Client.git"
   },
-  "bugs": "https://github.com/imoken777/iniad-api-node/issues",
-  "homepage": "https://github.com/imoken777/iniad-api-node/#readme",
+  "bugs": "https://github.com/imoken777/INIAD-API-Client.git/issues",
+  "homepage": "https://github.com/imoken777/INIAD-API-Client.git/#readme",
   "engines": {
     "node": ">=16.0.0"
   },

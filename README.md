@@ -1,10 +1,9 @@
-## INIAD API Node
+## INIAD API Client
 
-![npm](https://img.shields.io/npm/v/iniad-api-node)
-![node](https://img.shields.io/node/v/iniad-api-node)
+![npm](https://img.shields.io/npm/v/iniad-api-client)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-INIAD APIの非公式Node.jsクライアントライブラリです。
+INIAD APIの非公式クライアントライブラリです。
 
 本ライブラリは、INIADのアカウントを持つユーザーのみがアクセス可能な[INIAD開発者サイト](https://sites.google.com/iniad.org/developers?pli=1&authuser=0) に準拠しています。そこに記載されている教育用IoT APIとサイネージAPIの利用をサポートします。OpenAI APIには対応していません。
 
@@ -19,7 +18,7 @@ INIAD APIの非公式Node.jsクライアントライブラリです。
 npmを使用して簡単にインストールできます。
 
 ```sh
-npm install iniad-api-node
+npm install iniad-api-client
 ```
 
 ### 使い方
@@ -31,19 +30,19 @@ npm install iniad-api-node
 以下はES Modulesを使用した例です。
 
 ```typescript
-import { EduIotApiClient } from 'iniad-api-node';
+import { EduIotApiClient } from 'iniad-api-client';
 const iotClient = new EduIotApiClient(baseUrl, userId, password);
 
 (async () => {
-    const lockerInfo = await iotClient.getLockerInfo();
-    console.log(lockerInfo.lockerAddress);
+  const lockerInfo = await iotClient.getLockerInfo();
+  console.log(lockerInfo.lockerAddress);
 })();
 ```
 
 ### コントリビュート
 
-INIAD API Nodeはオープンソースプロジェクトです。バグの報告や機能の提案、プルリクエストなど、コミュニティの貢献を歓迎します。GitHubリポジトリをチェックしてください。
+INIAD API Clientはオープンソースプロジェクトです。バグの報告や機能の提案、プルリクエストなど、コミュニティの貢献を歓迎します。GitHubリポジトリをチェックしてください。
 
 ### ライセンス
 
-INIAD API Nodeは[MITライセンス]の下で公開されています。詳細については、LICENSEファイルを参照してください。
+INIAD API Clientは[MITライセンス]の下で公開されています。詳細については、LICENSEファイルを参照してください。
