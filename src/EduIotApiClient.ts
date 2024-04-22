@@ -18,10 +18,10 @@ import { dummyDescription, handleErrors, makeBasicAuth, validateCardIDm } from '
 export class EduIotApiClient {
   private axiosInstance;
 
-  constructor(userId: string, password: string) {
+  constructor(userId: string, password: string, baseUrl: string) {
     const authHeader = makeBasicAuth(userId, password);
     this.axiosInstance = axios.create({
-      baseURL: 'https://proxy-iniad-eduiot-api.imoken27.workers.dev',
+      baseURL: baseUrl,
       headers: {
         Authorization: authHeader,
       },
