@@ -23,7 +23,15 @@ npm install iniad-api-client
 
 ### 使い方
 
-パッケージをインポートして、APIクライアントを初期化します。baseUrlはINIAD開発者サイトで取得したAPIのエンドポイント、userIdとpasswordはINIADのアカウント情報です。
+パッケージをインポートして、APIクライアントを初期化します。userIdとpasswordはINIADのアカウント情報です。
+
+#### 設定の注意点
+
+- EduIotApiClientの設定:
+  EduIotApiClientを初期化する際に指定するbaseUrlは、INIAD開発者サイト記載のドメイン（例：<https://api.example.org>）までとし、それ以下のパス（例：/api/v1）は含めないでください。これにより、正確なAPIエンドポイントへのアクセスが保証されます。
+
+- SignageApiClientの設定:
+  SignageApiClientは、[CORSポリシー](https://developer.mozilla.org/ja/docs/Web/HTTP/CORS)を遵守するために、プロキシを経由してAPIへのリクエストを行う必要があります。プロキシのURLはbaseProxyUrlオプショナル引数を通じて設定可能です。もしbaseProxyUrlを指定しない場合は、開発者が用意したデフォルトのプロキシが使用されます。
 
 ソースコードを共有する場合など、それらの情報を直接ソースコードに記述することは推奨されません。環境変数や設定ファイルなどを使用して、それらの情報を外部から取得するようにしてください。
 
@@ -71,4 +79,4 @@ INIAD API Clientはオープンソースプロジェクトです。バグの報�
 
 ### ライセンス
 
-INIAD API Clientは[MITライセンス]の下で公開されています。詳細については、LICENSEファイルを参照してください。
+INIAD API Clientは[MITライセンス](https://github.com/imoken777/INIAD-API-Client/blob/main/LICENSE)の下で公開されています。詳細については、LICENSEファイルを参照してください。
