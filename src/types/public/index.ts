@@ -1,25 +1,20 @@
-export interface StatusInfo {
+export type StatusInfo = {
   readonly status: 'success' | 'error' | 'dummy';
   readonly description: string;
-}
+};
 
 export type LockerInfo = StatusInfo & {
   readonly lockerAddress: string | null;
   readonly lockerFloor: number | null;
 };
 
-export type ICCardInfo<IncludeStatusInfo = true> = IncludeStatusInfo extends true
-  ? StatusInfo & {
-      readonly cardIDm: string | null;
-      readonly icCardComment: string | null;
-    }
-  : {
-      readonly cardIDm: string | null;
-      readonly icCardComment: string | null;
-    };
+export type ICCardInfo = StatusInfo & {
+  readonly cardIDm: string | null;
+  readonly icCardComment: string | null;
+};
 
 export type AllICCardInfo = StatusInfo & {
-  readonly cards: ICCardInfo<false>[];
+  readonly cards: Omit<ICCardInfo, keyof StatusInfo>[];
 };
 
 export type RoomStatus = StatusInfo & {
@@ -29,20 +24,14 @@ export type RoomStatus = StatusInfo & {
   readonly airPressure: number | null;
 };
 
-export type CardSignageLink<IncludeStatusInfo = true> = IncludeStatusInfo extends true
-  ? StatusInfo & {
-      readonly cardIDm: string | null;
-      readonly url: string | null;
-      readonly displaySeconds: number | null;
-    }
-  : {
-      readonly cardIDm: string | null;
-      readonly url: string | null;
-      readonly displaySeconds: number | null;
-    };
+export type CardSignageLink = StatusInfo & {
+  readonly cardIDm: string | null;
+  readonly url: string | null;
+  readonly displaySeconds: number | null;
+};
 
 export type AllCardSignageLinks = StatusInfo & {
-  readonly links: CardSignageLink<false>[];
+  readonly links: Omit<CardSignageLink, keyof StatusInfo>[];
 };
 
 export type DeleteCardSignageLink = StatusInfo & {
