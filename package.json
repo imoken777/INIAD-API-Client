@@ -1,6 +1,6 @@
 {
   "name": "iniad-api-client",
-  "version": "0.0.7",
+  "version": "0.1.7",
   "description": "iniad-api-client is an unofficial client for INIAD API",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -22,8 +22,7 @@
   ],
   "files": [
     "dist",
-    "LICENSE",
-    "README.md"
+    "src"
   ],
   "scripts": {
     "prepublishOnly": "npm run build",
