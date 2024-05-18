@@ -1,5 +1,5 @@
 export type StatusInfo = {
-  readonly status: 'success' | 'error' | 'dummy';
+  readonly status: 'success' | 'dummy';
   readonly description: string;
 };
 

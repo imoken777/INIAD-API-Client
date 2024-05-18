@@ -21,15 +21,14 @@ export const makeBasicAuth = (userId: string, password: string): string => {
 };
 
 const isCardIDm = (input: string): input is ValidatedCardIDm => {
-  return input.length === 16 && input.match(/^[0-9A-Z]+$/) !== null
-}
+  return input.length === 16 && input.match(/^[0-9A-Z]+$/) !== null;
+};
 
 export const validateCardIDm = (input: string): ValidatedCardIDm => {
   if (isCardIDm(input)) {
-    return input
-  } else {
-    throw new Error(
-      'The IDm entered is invalid: the IDm must consist of only 16 digits (0-9) and capital letters (A-Z)',
-    );
+    return input;
   }
+  throw new Error(
+    'The IDm entered is invalid: the IDm must consist of only 16 digits (0-9) and capital letters (A-Z)',
+  );
 };
