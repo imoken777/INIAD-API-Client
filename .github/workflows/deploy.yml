@@ -1,12 +1,14 @@
 name: Release and Publish
 
 on:
-  push:
-    tags:
-      - 'v*.*.*'
+  workflow_run:
+    workflows: ['test']
+    types: [completed]
+    branches: [main]
 
 jobs:
   release:
+    if: github.event.workflow_run.conclusion == 'success' && startsWith(github.event.workflow_run.head_branch, 'refs/tags/v')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
