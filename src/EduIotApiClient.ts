@@ -13,7 +13,7 @@ import type {
   RoomApiResponse,
 } from './types/internal';
 import type { AllICCardInfo, ICCardInfo, LockerInfo, RoomStatus, StatusInfo } from './types/public';
-import { dummyDescription, handleErrors, makeBasicAuth, validateCardIDm } from './utils';
+import { dummyStatusInfo, handleErrors, makeBasicAuth, validateCardIDm } from './utils';
 
 export class EduIotApiClient {
   private axiosInstance;
@@ -45,15 +45,11 @@ export class EduIotApiClient {
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 503) {
-          const dummyInfo: StatusInfo = {
-            status: 'dummy',
-            description: dummyDescription,
-          };
           const dummyData: LockerApiResponse = {
             name: '32XXXX',
             floor: 3,
           };
-          return parseToLockerInfo(dummyInfo, dummyData);
+          return parseToLockerInfo(dummyStatusInfo, dummyData);
         }
       }
       throw error;
@@ -77,15 +73,11 @@ export class EduIotApiClient {
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 503) {
-          const dummyInfo: StatusInfo = {
-            status: 'dummy',
-            description: dummyDescription,
-          };
           const dummyData: LockerApiResponse = {
             name: '32XXXX',
             floor: 3,
           };
-          return parseToLockerInfo(dummyInfo, dummyData);
+          return parseToLockerInfo(dummyStatusInfo, dummyData);
         }
       }
       throw error;
@@ -108,14 +100,10 @@ export class EduIotApiClient {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 503) {
-          const dummyInfo: StatusInfo = {
-            status: 'dummy',
-            description: dummyDescription,
-          };
           const dummyData: AllICCardApiResponse = [
             { id: 1, uid: 'XXXXXXXXXXXXXXXX', comment: 'dummy comment' },
           ];
-          return parseToAllICCardInfo(dummyInfo, dummyData);
+          return parseToAllICCardInfo(dummyStatusInfo, dummyData);
         }
       }
       throw error;
@@ -153,17 +141,13 @@ export class EduIotApiClient {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 503) {
-          const dummyInfo: StatusInfo = {
-            status: 'dummy',
-            description: dummyDescription,
-          };
           const dummyData: ICCardInfoApiResponse = {
             id: 1,
             uid: 'XXXXXXXXXXXXXXXX',
             comment: 'dummy comment',
           };
 
-          return parseToICCardInfo(dummyInfo, dummyData);
+          return parseToICCardInfo(dummyStatusInfo, dummyData);
         }
       }
       throw error;
@@ -185,10 +169,7 @@ export class EduIotApiClient {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 503) {
-          return {
-            status: 'dummy',
-            description: dummyDescription,
-          };
+          return dummyStatusInfo;
         }
       }
       throw error;
@@ -212,10 +193,6 @@ export class EduIotApiClient {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 503) {
-          const dummyStatusInfo: StatusInfo = {
-            status: 'dummy',
-            description: dummyDescription,
-          };
           const dummyResponse: RoomApiResponse = [
             { room_num: 1, sensor_type: 'temperature', value: 30.9 },
             { room_num: 1, sensor_type: 'humidity', value: 55.5 },

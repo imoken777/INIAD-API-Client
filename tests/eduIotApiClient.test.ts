@@ -1,7 +1,7 @@
 import type { LockerInfo, RoomStatus } from '../src/index';
 import { EduIotApiClient } from '../src/index';
 import type { LockerApiResponse, RoomApiResponse } from '../src/types/internal';
-import { dummyDescription } from '../src/utils';
+import { dummyStatusInfo } from '../src/utils';
 
 const mockAxiosInstance = {
   get: jest.fn(),
@@ -48,8 +48,7 @@ describe('EduIotApiClient', () => {
       const result = await client.getLockerInfo();
 
       const expectedLockerInfo: LockerInfo = {
-        status: 'dummy',
-        description: dummyDescription,
+        ...dummyStatusInfo,
         lockerAddress: '32XXXX',
         lockerFloor: 3,
       };
@@ -92,8 +91,7 @@ describe('EduIotApiClient', () => {
       const result = await client.openLocker();
 
       const expectedLockerInfo: LockerInfo = {
-        status: 'dummy',
-        description: dummyDescription,
+        ...dummyStatusInfo,
         lockerAddress: '32XXXX',
         lockerFloor: 3,
       };
@@ -139,8 +137,7 @@ describe('EduIotApiClient', () => {
       const result = await client.getAllICCardsInfo();
 
       const expectedAllICCardsInfo = {
-        status: 'dummy',
-        description: dummyDescription,
+        ...dummyStatusInfo,
         cards: [{ cardIDm: 'XXXXXXXXXXXXXXXX', icCardComment: 'dummy comment' }],
       };
 
@@ -192,8 +189,7 @@ describe('EduIotApiClient', () => {
       const result = await client.registerICCard('1234567890123456', 'test1');
 
       const expectedICCardInfo = {
-        status: 'dummy',
-        description: dummyDescription,
+        ...dummyStatusInfo,
         cardIDm: 'XXXXXXXXXXXXXXXX',
         icCardComment: 'dummy comment',
       };
@@ -232,8 +228,7 @@ describe('EduIotApiClient', () => {
       const result = await client.deleteICCard();
 
       const expectedStatusInfo = {
-        status: 'dummy',
-        description: dummyDescription,
+        ...dummyStatusInfo,
       };
 
       expect(result).toEqual(expectedStatusInfo);
@@ -282,8 +277,7 @@ describe('EduIotApiClient', () => {
       const result = await client.getRoomStatus(1);
 
       const expectedRoomStatus: RoomStatus = {
-        status: 'dummy',
-        description: dummyDescription,
+        ...dummyStatusInfo,
         temperature: 30.9,
         humidity: 55.5,
         illuminance: 100,

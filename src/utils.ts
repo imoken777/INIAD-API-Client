@@ -1,7 +1,11 @@
 import type { AxiosResponse } from 'axios';
 import type { ValidatedCardIDm } from './types/internal';
+import type { StatusInfo } from './types/public';
 
-export const dummyDescription = 'Dummy data is displayed for access from outside the INIAD Wi-Fi.';
+export const dummyStatusInfo: StatusInfo = {
+  status: 'dummy',
+  description: 'Dummy data is displayed for access from outside the INIAD Wi-Fi.',
+};
 
 export const handleErrors = <T>(response: AxiosResponse<T>): T => {
   if (response.status >= 500 && response.status <= 599) {
