@@ -1,6 +1,6 @@
 {
   "name": "iniad-api-client",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "iniad-api-client is an unofficial client for INIAD API",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
