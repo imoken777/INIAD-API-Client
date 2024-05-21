@@ -1,3 +1,4 @@
+import type { AxiosInstance } from 'axios';
 import axios from 'axios';
 import {
   parseToAllCardSignageLinks,
@@ -19,7 +20,7 @@ import type {
 import { handleErrors, makeBasicAuth, validateCardIDm } from './utils';
 
 export class SignageApiClient {
-  private axiosInstance;
+  private axiosInstance: AxiosInstance;
 
   constructor(userId: string, password: string, baseProxyUrl?: string) {
     const authHeader = makeBasicAuth(userId, password);

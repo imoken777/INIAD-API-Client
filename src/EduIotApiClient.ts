@@ -1,3 +1,4 @@
+import type { AxiosInstance } from 'axios';
 import axios from 'axios';
 import {
   parseToAllICCardInfo,
@@ -16,7 +17,7 @@ import type { AllICCardInfo, ICCardInfo, LockerInfo, RoomStatus, StatusInfo } fr
 import { dummyStatusInfo, handleErrors, makeBasicAuth, validateCardIDm } from './utils';
 
 export class EduIotApiClient {
-  private axiosInstance;
+  private axiosInstance: AxiosInstance;
 
   constructor(userId: string, password: string, baseUrl: string) {
     const authHeader = makeBasicAuth(userId, password);
