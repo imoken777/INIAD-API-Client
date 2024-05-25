@@ -18,6 +18,7 @@ export type AllICCardInfo = StatusInfo & {
 };
 
 export type RoomStatus = StatusInfo & {
+  readonly roomNumber: number | null;
   readonly temperature: number | null;
   readonly humidity: number | null;
   readonly illuminance: number | null;

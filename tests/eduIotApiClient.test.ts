@@ -259,6 +259,7 @@ describe('EduIotApiClient', () => {
       const expectedRoomStatus: RoomStatus = {
         status: 'success',
         description: 'Succeeded getting room status',
+        roomNumber: 1111,
         temperature: 25,
         humidity: 50,
         illuminance: 500,
@@ -278,6 +279,7 @@ describe('EduIotApiClient', () => {
 
       const expectedRoomStatus: RoomStatus = {
         ...dummyStatusInfo,
+        roomNumber: 1,
         temperature: 30.9,
         humidity: 55.5,
         illuminance: 100,
