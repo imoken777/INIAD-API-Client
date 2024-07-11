@@ -14,7 +14,7 @@ export type AllICCardApiResponse = Array<ICCardInfoApiResponse>;
 
 export type RoomApiResponse = Array<{
   readonly room_num?: number;
-  readonly sensor_type?: string;
+  readonly sensor_type?: 'temperature' | 'humidity' | 'illuminance' | 'airpressure';
   readonly value?: number | null;
 }>;
 
