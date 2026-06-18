@@ -1,19 +1,16 @@
+/// <reference types="jest" />
+
 import type { LockerInfo, RoomStatus } from '../src/index';
 import { EduIotApiClient } from '../src/index';
 import type { LockerApiResponse, RoomApiResponse } from '../src/types/internal';
 import { dummyStatusInfo } from '../src/utils';
 
-const mockAxiosInstance = {
-  get: jest.fn(),
-  post: jest.fn(),
-  delete: jest.fn(),
-};
+const mockFetch = jest.fn();
 
-// `axios.create()` の挙動をモック化して、上記のモックインスタンスを返すように設定
-jest.mock('axios', () => ({
-  create: jest.fn(() => mockAxiosInstance),
-  isAxiosError: jest.fn((error) => Boolean(error?.isAxiosError)),
-}));
+Object.defineProperty(globalThis, 'fetch', {
+  writable: true,
+  value: mockFetch,
+});
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -27,7 +24,12 @@ const mockLockerInfo: LockerApiResponse = {
 describe('EduIotApiClient', () => {
   describe('getLockerInfo', () => {
     it('locker infoの取得に成功した場合はLockerInfoを返すべきです', async () => {
-      mockAxiosInstance.get.mockResolvedValue({ data: mockLockerInfo });
+      mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        text: jest.fn().mockResolvedValue(JSON.stringify(mockLockerInfo)),
+      });
       const client = new EduIotApiClient('user', 'password', 'https://localhost');
       const result = await client.getLockerInfo();
 
@@ -39,11 +41,19 @@ describe('EduIotApiClient', () => {
       };
 
       expect(result).toEqual(expectedLockerInfo);
-      expect(mockAxiosInstance.get).toHaveBeenCalledWith('/api/v1/locker');
+      expect(mockFetch).toHaveBeenCalledWith('https://localhost/api/v1/locker', {
+        headers: {
+          Authorization: expect.stringMatching(/^Basic /),
+        },
+      });
     });
 
     it('locker infoの取得に503で失敗した場合はダミーを返すべきです', async () => {
-      mockAxiosInstance.get.mockRejectedValue({ response: { status: 503 }, isAxiosError: true });
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 503,
+        statusText: 'Service Unavailable',
+      });
       const client = new EduIotApiClient('user', 'password', 'https://localhost');
       const result = await client.getLockerInfo();
 
@@ -58,7 +68,7 @@ describe('EduIotApiClient', () => {
 
     it('locker infoの取得に失敗した場合はエラーをスローするべきです', async () => {
       const client = new EduIotApiClient('user', 'password', 'https://localhost');
-      mockAxiosInstance.get.mockRejectedValue(new Error('Failed to get locker info'));
+      mockFetch.mockRejectedValue(new Error('Failed to get locker info'));
       const result = client.getLockerInfo();
 
       await expect(result).rejects.toThrow('Failed to get locker info');
@@ -67,7 +77,12 @@ describe('EduIotApiClient', () => {
 
   describe('openLocker', () => {
     it('lockerの開錠に成功した場合はLockerInfoを返すべきです', async () => {
-      mockAxiosInstance.post.mockResolvedValue({ data: mockLockerInfo });
+      mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        text: jest.fn().mockResolvedValue(JSON.stringify(mockLockerInfo)),
+      });
       const client = new EduIotApiClient('user', 'password', 'https://localhost');
       const result = await client.openLocker();
 
@@ -79,13 +94,19 @@ describe('EduIotApiClient', () => {
       };
 
       expect(result).toEqual(expectedLockerInfo);
-      expect(mockAxiosInstance.post).toHaveBeenCalledWith('/api/v1/locker/open', null);
+      expect(mockFetch).toHaveBeenCalledWith('https://localhost/api/v1/locker/open', {
+        method: 'POST',
+        headers: {
+          Authorization: expect.stringMatching(/^Basic /),
+        },
+      });
     });
 
     it('lockerの開錠に503で失敗した場合はダミーを返すべきです', async () => {
-      mockAxiosInstance.post.mockRejectedValue({
-        response: { status: 503 },
-        isAxiosError: true,
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 503,
+        statusText: 'Service Unavailable',
       });
       const client = new EduIotApiClient('user', 'password', 'https://localhost');
       const result = await client.openLocker();
@@ -100,7 +121,7 @@ describe('EduIotApiClient', () => {
     });
 
     it('lockerの開錠に失敗した場合はエラーをスローするべきです', async () => {
-      mockAxiosInstance.post.mockRejectedValue(new Error('Failed to open locker'));
+      mockFetch.mockRejectedValue(new Error('Failed to open locker'));
       const client = new EduIotApiClient('user', 'password', 'https://localhost');
       const result = client.openLocker();
 
@@ -114,7 +135,12 @@ describe('EduIotApiClient', () => {
         { id: 1, uid: '1234567890123456', comment: 'test1' },
         { id: 2, uid: '1234567890123457', comment: 'test2' },
       ];
-      mockAxiosInstance.get.mockResolvedValue({ data: mockAllICCardInfo });
+      mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        text: jest.fn().mockResolvedValue(JSON.stringify(mockAllICCardInfo)),
+      });
       const client = new EduIotApiClient('user', 'password', 'https://localhost');
       const result = await client.getAllICCardsInfo();
 
@@ -128,11 +154,19 @@ describe('EduIotApiClient', () => {
       };
 
       expect(result).toEqual(expectedAllICCardsInfo);
-      expect(mockAxiosInstance.get).toHaveBeenCalledWith('/api/v1/iccards');
+      expect(mockFetch).toHaveBeenCalledWith('https://localhost/api/v1/iccards', {
+        headers: {
+          Authorization: expect.stringMatching(/^Basic /),
+        },
+      });
     });
 
     it('ic card infoの取得に503で失敗した場合はダミーを返すべきです', async () => {
-      mockAxiosInstance.get.mockRejectedValue({ response: { status: 503 }, isAxiosError: true });
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 503,
+        statusText: 'Service Unavailable',
+      });
       const client = new EduIotApiClient('user', 'password', 'https://localhost');
       const result = await client.getAllICCardsInfo();
 
@@ -145,7 +179,7 @@ describe('EduIotApiClient', () => {
     });
 
     it('ic card infoの取得に失敗した場合はエラーをスローするべきです', async () => {
-      mockAxiosInstance.get.mockRejectedValue(new Error('Failed to get all IC card info'));
+      mockFetch.mockRejectedValue(new Error('Failed to get all IC card info'));
       const client = new EduIotApiClient('user', 'password', 'https://localhost');
       const result = client.getAllICCardsInfo();
 
@@ -160,7 +194,12 @@ describe('EduIotApiClient', () => {
         uid: '1234567890123456',
         comment: 'test1',
       };
-      mockAxiosInstance.post.mockResolvedValue({ data: mockICCardInfo });
+      mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        text: jest.fn().mockResolvedValue(JSON.stringify(mockICCardInfo)),
+      });
       const client = new EduIotApiClient('user', 'password', 'https://localhost');
       const result = await client.registerICCard('1234567890123456', 'test1');
 
@@ -172,19 +211,22 @@ describe('EduIotApiClient', () => {
       };
 
       expect(result).toEqual(expectedICCardInfo);
-      expect(mockAxiosInstance.post).toHaveBeenCalledWith(
-        '/api/v1/iccards',
-        expect.any(URLSearchParams),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
+      expect(mockFetch).toHaveBeenCalledWith('https://localhost/api/v1/iccards', {
+        method: 'POST',
+        body: 'uid=1234567890123456&comment=test1',
+        headers: {
+          Authorization: expect.stringMatching(/^Basic /),
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
-      );
+      });
     });
 
     it('ic cardの登録に503で失敗した場合はダミーを返すべきです', async () => {
-      mockAxiosInstance.post.mockRejectedValue({ response: { status: 503 }, isAxiosError: true });
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 503,
+        statusText: 'Service Unavailable',
+      });
       const client = new EduIotApiClient('user', 'password', 'https://localhost');
       const result = await client.registerICCard('1234567890123456', 'test1');
 
@@ -198,7 +240,7 @@ describe('EduIotApiClient', () => {
     });
 
     it('ic cardの登録に失敗した場合はエラーをスローするべきです', async () => {
-      mockAxiosInstance.post.mockRejectedValue(new Error('Failed to register IC card'));
+      mockFetch.mockRejectedValue(new Error('Failed to register IC card'));
       const client = new EduIotApiClient('user', 'password', 'https://localhost');
       const result = client.registerICCard('1234567890123456', 'test1');
 
@@ -209,7 +251,12 @@ describe('EduIotApiClient', () => {
   describe('deleteICCard', () => {
     it('ic cardの削除に成功した場合はStatusInfoを返すべきです', async () => {
       const mockMessage = { message: 'ICCard No.1 was deleted' };
-      mockAxiosInstance.delete.mockResolvedValue({ data: mockMessage });
+      mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        text: jest.fn().mockResolvedValue(JSON.stringify(mockMessage)),
+      });
       const client = new EduIotApiClient('user', 'password', 'https://localhost');
       const result = await client.deleteICCard();
 
@@ -219,11 +266,20 @@ describe('EduIotApiClient', () => {
       };
 
       expect(result).toEqual(expectedStatusInfo);
-      expect(mockAxiosInstance.delete).toHaveBeenCalledWith('/api/v1/iccards/1');
+      expect(mockFetch).toHaveBeenCalledWith('https://localhost/api/v1/iccards/1', {
+        method: 'DELETE',
+        headers: {
+          Authorization: expect.stringMatching(/^Basic /),
+        },
+      });
     });
 
     it('ic cardの削除に503で失敗した場合はダミーを返すべきです', async () => {
-      mockAxiosInstance.delete.mockRejectedValue({ response: { status: 503 }, isAxiosError: true });
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 503,
+        statusText: 'Service Unavailable',
+      });
       const client = new EduIotApiClient('user', 'password', 'https://localhost');
       const result = await client.deleteICCard();
 
@@ -235,7 +291,7 @@ describe('EduIotApiClient', () => {
     });
 
     it('ic cardの削除に失敗した場合はエラーをスローするべきです', async () => {
-      mockAxiosInstance.delete.mockRejectedValue(new Error('Failed to delete IC card'));
+      mockFetch.mockRejectedValue(new Error('Failed to delete IC card'));
       const client = new EduIotApiClient('user', 'password', 'https://localhost');
       const result = client.deleteICCard();
 
@@ -252,7 +308,12 @@ describe('EduIotApiClient', () => {
         { room_num: 1111, sensor_type: 'illuminance', value: 500 },
         { room_num: 1111, sensor_type: 'airpressure', value: 1000 },
       ];
-      mockAxiosInstance.get.mockResolvedValue({ data: mockRoomStatus });
+      mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        text: jest.fn().mockResolvedValue(JSON.stringify(mockRoomStatus)),
+      });
       const client = new EduIotApiClient('user', 'password', 'https://localhost');
       const result = await client.getRoomStatus(1);
 
@@ -267,13 +328,22 @@ describe('EduIotApiClient', () => {
       };
 
       expect(result).toEqual(expectedRoomStatus);
-      expect(mockAxiosInstance.get).toHaveBeenCalledWith(
-        `/api/v1/sensors/1?sensor_type=${sensors.join('+')}`,
+      expect(mockFetch).toHaveBeenCalledWith(
+        `https://localhost/api/v1/sensors/1?sensor_type=${sensors.join('+')}`,
+        {
+          headers: {
+            Authorization: expect.stringMatching(/^Basic /),
+          },
+        },
       );
     });
 
     it('room statusの取得に503で失敗した場合はダミーを返すべきです', async () => {
-      mockAxiosInstance.get.mockRejectedValue({ response: { status: 503 }, isAxiosError: true });
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 503,
+        statusText: 'Service Unavailable',
+      });
       const client = new EduIotApiClient('user', 'password', 'https://localhost');
       const result = await client.getRoomStatus(1);
 
@@ -290,7 +360,7 @@ describe('EduIotApiClient', () => {
     });
 
     it('room statusの取得に失敗した場合はエラーをスローするべきです', async () => {
-      mockAxiosInstance.get.mockRejectedValue(new Error('Failed to get room status'));
+      mockFetch.mockRejectedValue(new Error('Failed to get room status'));
       const client = new EduIotApiClient('user', 'password', 'https://localhost');
       const result = client.getRoomStatus(1);
 

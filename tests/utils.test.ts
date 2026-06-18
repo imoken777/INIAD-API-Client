@@ -1,26 +1,24 @@
-import type { AxiosResponse, AxiosResponseHeaders } from 'axios';
+/// <reference types="jest" />
+
+import type { ApiResponse } from '../src/utils';
 import { handleErrors, makeBasicAuth, validateCardIDm } from '../src/utils';
 
 describe('handleErrors', () => {
   it('ステータスコードが5xxでない場合はレスポンスデータを返すべきです', () => {
-    const mockResponse: AxiosResponse = {
+    const mockResponse: ApiResponse<{ message: string }> = {
       data: { message: 'OK' },
       status: 200,
       statusText: 'OK',
-      headers: {},
-      config: { headers: {} as AxiosResponseHeaders },
     };
 
     expect(handleErrors(mockResponse)).toEqual({ message: 'OK' });
   });
 
   it('ステータスコードが5xxの場合はエラーをスローするべきです', () => {
-    const mockResponse: AxiosResponse = {
+    const mockResponse: ApiResponse<{ message: string }> = {
       data: { message: 'Internal Server Error' },
       status: 500,
       statusText: 'Internal Server Error',
-      headers: {},
-      config: { headers: {} as AxiosResponseHeaders },
     };
 
     expect(() => handleErrors(mockResponse)).toThrow();

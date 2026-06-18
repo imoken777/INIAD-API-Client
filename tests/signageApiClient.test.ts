@@ -1,3 +1,5 @@
+/// <reference types="jest" />
+
 import type { AllCardSignageLinks, CardSignageLink } from '../src';
 import { SignageApiClient } from '../src';
 import type {
@@ -6,15 +8,16 @@ import type {
   DeleteCardSignageLinkApiResponse,
 } from '../src/types/internal';
 
-const mockAxiosInstance = {
-  get: jest.fn(),
-  put: jest.fn(),
-  delete: jest.fn(),
-};
+const mockFetch = jest.fn();
 
-jest.mock('axios', () => ({
-  create: jest.fn(() => mockAxiosInstance),
-}));
+Object.defineProperty(globalThis, 'fetch', {
+  writable: true,
+  value: mockFetch,
+});
+
+beforeEach(() => {
+  jest.clearAllMocks();
+});
 
 const mockCardSignageLink: CardSignageLinkApiResponse = {
   idm: '1234567890123456',
@@ -25,7 +28,12 @@ const mockCardSignageLink: CardSignageLinkApiResponse = {
 describe('SignageApiClient', () => {
   describe('getContentByCardIDm', () => {
     it('カードIDmに紐づくサイネージで表示するコンテンツを返すべきです', async () => {
-      mockAxiosInstance.get.mockResolvedValue({ data: mockCardSignageLink });
+      mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        text: jest.fn().mockResolvedValue(JSON.stringify(mockCardSignageLink)),
+      });
       const client = new SignageApiClient('user', 'password');
       const result = await client.getContentByCardIDm('1234567890123456');
 
@@ -38,11 +46,18 @@ describe('SignageApiClient', () => {
       };
 
       expect(result).toEqual(expectedCardSignageLink);
-      expect(mockAxiosInstance.get).toHaveBeenCalledWith('/api/v1/signage/cards/1234567890123456');
+      expect(mockFetch).toHaveBeenCalledWith(
+        'https://proxy-iniad-signage-api.imoken27.workers.dev/api/v1/signage/cards/1234567890123456',
+        {
+          headers: {
+            Authorization: expect.stringMatching(/^Basic /),
+          },
+        },
+      );
     });
 
     it('取得に失敗した場合はエラーをスローするべきです', async () => {
-      mockAxiosInstance.get.mockRejectedValue(new Error('Failed to get content by cardIDm'));
+      mockFetch.mockRejectedValue(new Error('Failed to get content by cardIDm'));
       const client = new SignageApiClient('user', 'password');
       const result = client.getContentByCardIDm('1234567890123456');
 
@@ -59,7 +74,12 @@ describe('SignageApiClient', () => {
           display_seconds: 10,
         },
       ];
-      mockAxiosInstance.get.mockResolvedValue({ data: mockResponse });
+      mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        text: jest.fn().mockResolvedValue(JSON.stringify(mockResponse)),
+      });
       const client = new SignageApiClient('user', 'password');
       const result = await client.getAllCardIDmAndContentList();
 
@@ -76,13 +96,18 @@ describe('SignageApiClient', () => {
       };
 
       expect(result).toEqual(expectedResponse);
-      expect(mockAxiosInstance.get).toHaveBeenCalledWith('/api/v1/signage/cards');
+      expect(mockFetch).toHaveBeenCalledWith(
+        'https://proxy-iniad-signage-api.imoken27.workers.dev/api/v1/signage/cards',
+        {
+          headers: {
+            Authorization: expect.stringMatching(/^Basic /),
+          },
+        },
+      );
     });
 
     it('取得に失敗した場合はエラーをスローするべきです', async () => {
-      mockAxiosInstance.get.mockRejectedValue(
-        new Error('Failed to get all cardIDm and content list'),
-      );
+      mockFetch.mockRejectedValue(new Error('Failed to get all cardIDm and content list'));
       const client = new SignageApiClient('user', 'password');
       const result = client.getAllCardIDmAndContentList();
 
@@ -92,7 +117,12 @@ describe('SignageApiClient', () => {
 
   describe('upsertContentByCardIDm', () => {
     it('カードIDmにコンテンツを登録することに成功した場合はCardSignageLinkを返すべきです', async () => {
-      mockAxiosInstance.put.mockResolvedValue({ data: mockCardSignageLink });
+      mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        text: jest.fn().mockResolvedValue(JSON.stringify(mockCardSignageLink)),
+      });
       const client = new SignageApiClient('user', 'password');
       const result = await client.upsertContentByCardIDm(
         '1234567890123456',
@@ -109,15 +139,21 @@ describe('SignageApiClient', () => {
       };
 
       expect(result).toEqual(expectedCardSignageLink);
-      expect(mockAxiosInstance.put).toHaveBeenCalledWith(
-        '/api/v1/signage/cards/1234567890123456',
-        { url: 'https://example.com', display_seconds: 10 },
-        { headers: { 'Content-Type': 'application/json' } },
+      expect(mockFetch).toHaveBeenCalledWith(
+        'https://proxy-iniad-signage-api.imoken27.workers.dev/api/v1/signage/cards/1234567890123456',
+        {
+          method: 'PUT',
+          body: JSON.stringify({ url: 'https://example.com', display_seconds: 10 }),
+          headers: {
+            Authorization: expect.stringMatching(/^Basic /),
+            'Content-Type': 'application/json',
+          },
+        },
       );
     });
 
     it('登録に失敗した場合はエラーをスローするべきです', async () => {
-      mockAxiosInstance.put.mockRejectedValue(new Error('Failed to register content by cardIDm'));
+      mockFetch.mockRejectedValue(new Error('Failed to register content by cardIDm'));
       const client = new SignageApiClient('user', 'password');
       const result = client.upsertContentByCardIDm('1234567890123456', 'https://example.com', 10);
 
@@ -132,7 +168,12 @@ describe('SignageApiClient', () => {
         removed_count: 1,
       };
 
-      mockAxiosInstance.delete.mockResolvedValue({ data: mockResponse });
+      mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        text: jest.fn().mockResolvedValue(JSON.stringify(mockResponse)),
+      });
       const client = new SignageApiClient('user', 'password');
       const result = await client.deleteContentByCardIDm('1234567890123456');
 
@@ -144,13 +185,19 @@ describe('SignageApiClient', () => {
       };
 
       expect(result).toEqual(expectedResponse);
-      expect(mockAxiosInstance.delete).toHaveBeenCalledWith(
-        '/api/v1/signage/cards/1234567890123456',
+      expect(mockFetch).toHaveBeenCalledWith(
+        'https://proxy-iniad-signage-api.imoken27.workers.dev/api/v1/signage/cards/1234567890123456',
+        {
+          method: 'DELETE',
+          headers: {
+            Authorization: expect.stringMatching(/^Basic /),
+          },
+        },
       );
     });
 
     it('削除に失敗した場合はエラーをスローするべきです', async () => {
-      mockAxiosInstance.delete.mockRejectedValue(new Error('Failed to delete content by cardIDm'));
+      mockFetch.mockRejectedValue(new Error('Failed to delete content by cardIDm'));
       const client = new SignageApiClient('user', 'password');
       const result = client.deleteContentByCardIDm('1234567890123456');
 
