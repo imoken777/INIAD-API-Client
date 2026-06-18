@@ -77,6 +77,19 @@ main2();
 
 INIAD API Clientはオープンソースプロジェクトです。バグの報告や機能の提案、プルリクエストなど、コミュニティの貢献を歓迎します。GitHubリポジトリをチェックしてください。
 
+### 公開手順
+
+このリポジトリの公開は、`main` へ直接 `npm publish` するのではなく、`v*` 形式のタグを push して GitHub Actions から行います。公開時は次の順で進めてください。
+バージョンはセマンティックバージョニングに従ってください。
+
+```sh
+npm version 0.0.0 --no-git-tag-version
+git add package.json package-lock.json
+git commit -m "chore: release v0.0.0"
+git tag v0.0.0
+git push origin main --tags
+```
+
 ### ライセンス
 
 INIAD API Clientは[MITライセンス](https://github.com/imoken777/INIAD-API-Client/blob/main/LICENSE)の下で公開されています。詳細については、LICENSEファイルを参照してください。
