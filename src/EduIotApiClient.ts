@@ -1,5 +1,3 @@
-import type { AxiosInstance } from 'axios';
-import axios from 'axios';
 import {
   parseToAllICCardInfo,
   parseToICCardInfo,
@@ -14,19 +12,27 @@ import type {
   RoomApiResponse,
 } from './types/internal';
 import type { AllICCardInfo, ICCardInfo, LockerInfo, RoomStatus, StatusInfo } from './types/public';
-import { dummyStatusInfo, handleErrors, makeBasicAuth, validateCardIDm } from './utils';
+import {
+  dummyStatusInfo,
+  fetchJson,
+  handleErrors,
+  isHttpError,
+  makeBasicAuth,
+  validateCardIDm,
+} from './utils';
 
 export class EduIotApiClient {
-  private axiosInstance: AxiosInstance;
+  private baseUrl: string;
+
+  private authHeader: string;
 
   constructor(userId: string, password: string, baseUrl: string) {
-    const authHeader = makeBasicAuth(userId, password);
-    this.axiosInstance = axios.create({
-      baseURL: baseUrl,
-      headers: {
-        Authorization: authHeader,
-      },
-    });
+    this.baseUrl = baseUrl;
+    this.authHeader = makeBasicAuth(userId, password);
+  }
+
+  private makeRequestUrl(pathname: string): string {
+    return new URL(pathname, this.baseUrl).toString();
   }
 
   //ユーザーのロッカーの情報を返す関数
@@ -34,7 +40,10 @@ export class EduIotApiClient {
     const requestUrl = '/api/v1/locker';
 
     try {
-      const response = await this.axiosInstance.get<LockerApiResponse>(requestUrl);
+      const response = await fetchJson<LockerApiResponse>(
+        this.makeRequestUrl(requestUrl),
+        this.authHeader,
+      );
       const responseData = handleErrors<LockerApiResponse>(response);
 
       const successInfo: StatusInfo = {
@@ -44,14 +53,12 @@ export class EduIotApiClient {
 
       return parseToLockerInfo(successInfo, responseData);
     } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 503) {
-          const dummyData: LockerApiResponse = {
-            name: '32XXXX',
-            floor: 3,
-          };
-          return parseToLockerInfo(dummyStatusInfo, dummyData);
-        }
+      if (isHttpError(error) && error.status === 503) {
+        const dummyData: LockerApiResponse = {
+          name: '32XXXX',
+          floor: 3,
+        };
+        return parseToLockerInfo(dummyStatusInfo, dummyData);
       }
       throw error;
     }
@@ -62,7 +69,9 @@ export class EduIotApiClient {
     const requestUrl = '/api/v1/locker/open';
 
     try {
-      const response = await this.axiosInstance.post<LockerApiResponse>(requestUrl, null);
+      const response = await fetchJson<LockerApiResponse>(this.makeRequestUrl(requestUrl), this.authHeader, {
+        method: 'POST',
+      });
       const responseData = handleErrors<LockerApiResponse>(response);
 
       const successInfo: StatusInfo = {
@@ -72,14 +81,12 @@ export class EduIotApiClient {
 
       return parseToLockerInfo(successInfo, responseData);
     } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 503) {
-          const dummyData: LockerApiResponse = {
-            name: '32XXXX',
-            floor: 3,
-          };
-          return parseToLockerInfo(dummyStatusInfo, dummyData);
-        }
+      if (isHttpError(error) && error.status === 503) {
+        const dummyData: LockerApiResponse = {
+          name: '32XXXX',
+          floor: 3,
+        };
+        return parseToLockerInfo(dummyStatusInfo, dummyData);
       }
       throw error;
     }
@@ -90,7 +97,10 @@ export class EduIotApiClient {
     const requestUrl = '/api/v1/iccards';
 
     try {
-      const response = await this.axiosInstance.get<AllICCardApiResponse>(requestUrl);
+      const response = await fetchJson<AllICCardApiResponse>(
+        this.makeRequestUrl(requestUrl),
+        this.authHeader,
+      );
       const responseData = handleErrors<AllICCardApiResponse>(response);
 
       const successInfo: StatusInfo = {
@@ -99,13 +109,11 @@ export class EduIotApiClient {
       };
       return parseToAllICCardInfo(successInfo, responseData);
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 503) {
-          const dummyData: AllICCardApiResponse = [
-            { id: 1, uid: 'XXXXXXXXXXXXXXXX', comment: 'dummy comment' },
-          ];
-          return parseToAllICCardInfo(dummyStatusInfo, dummyData);
-        }
+      if (isHttpError(error) && error.status === 503) {
+        const dummyData: AllICCardApiResponse = [
+          { id: 1, uid: 'XXXXXXXXXXXXXXXX', comment: 'dummy comment' },
+        ];
+        return parseToAllICCardInfo(dummyStatusInfo, dummyData);
       }
       throw error;
     }
@@ -126,10 +134,14 @@ export class EduIotApiClient {
       data.append('uid', validatedCardIDm);
       data.append('comment', comment);
 
-      const response = await this.axiosInstance.post<ICCardInfoApiResponse>(
-        requestUrl,
-        data,
-        config,
+      const response = await fetchJson<ICCardInfoApiResponse>(
+        this.makeRequestUrl(requestUrl),
+        this.authHeader,
+        {
+          method: 'POST',
+          body: data.toString(),
+          headers: config.headers,
+        },
       );
       const responseData = handleErrors<ICCardInfoApiResponse>(response);
 
@@ -140,16 +152,14 @@ export class EduIotApiClient {
 
       return parseToICCardInfo(successInfo, responseData);
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 503) {
-          const dummyData: ICCardInfoApiResponse = {
-            id: 1,
-            uid: 'XXXXXXXXXXXXXXXX',
-            comment: 'dummy comment',
-          };
+      if (isHttpError(error) && error.status === 503) {
+        const dummyData: ICCardInfoApiResponse = {
+          id: 1,
+          uid: 'XXXXXXXXXXXXXXXX',
+          comment: 'dummy comment',
+        };
 
-          return parseToICCardInfo(dummyStatusInfo, dummyData);
-        }
+        return parseToICCardInfo(dummyStatusInfo, dummyData);
       }
       throw error;
     }
@@ -160,7 +170,13 @@ export class EduIotApiClient {
     const requestUrl = '/api/v1/iccards/1';
 
     try {
-      const response = await this.axiosInstance.delete(requestUrl);
+      const response = await fetchJson<Record<string, unknown>>(
+        this.makeRequestUrl(requestUrl),
+        this.authHeader,
+        {
+          method: 'DELETE',
+        },
+      );
       handleErrors(response);
 
       return {
@@ -168,10 +184,8 @@ export class EduIotApiClient {
         description: 'Succeeded deleting IC card',
       };
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 503) {
-          return dummyStatusInfo;
-        }
+      if (isHttpError(error) && error.status === 503) {
+        return dummyStatusInfo;
       }
       throw error;
     }
@@ -183,7 +197,7 @@ export class EduIotApiClient {
     const requestUrl = `/api/v1/sensors/${roomNumber}?sensor_type=${sensors.join('+')}`;
 
     try {
-      const response = await this.axiosInstance.get<RoomApiResponse>(requestUrl);
+      const response = await fetchJson<RoomApiResponse>(this.makeRequestUrl(requestUrl), this.authHeader);
       const responseData = handleErrors<RoomApiResponse>(response);
 
       const successStatusInfo: StatusInfo = {
@@ -192,16 +206,14 @@ export class EduIotApiClient {
       };
       return parseToRoomStatus(successStatusInfo, responseData);
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 503) {
-          const dummyResponse: RoomApiResponse = [
-            { room_num: 1, sensor_type: 'temperature', value: 30.9 },
-            { room_num: 1, sensor_type: 'humidity', value: 55.5 },
-            { room_num: 1, sensor_type: 'illuminance', value: 100 },
-            { room_num: 1, sensor_type: 'airpressure', value: 1006 },
-          ];
-          return parseToRoomStatus(dummyStatusInfo, dummyResponse);
-        }
+      if (isHttpError(error) && error.status === 503) {
+        const dummyResponse: RoomApiResponse = [
+          { room_num: 1, sensor_type: 'temperature', value: 30.9 },
+          { room_num: 1, sensor_type: 'humidity', value: 55.5 },
+          { room_num: 1, sensor_type: 'illuminance', value: 100 },
+          { room_num: 1, sensor_type: 'airpressure', value: 1006 },
+        ];
+        return parseToRoomStatus(dummyStatusInfo, dummyResponse);
       }
       throw error;
     }

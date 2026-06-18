@@ -1,5 +1,3 @@
-import type { AxiosInstance } from 'axios';
-import axios from 'axios';
 import {
   parseToAllCardSignageLinks,
   parseToCardSignageLink,
@@ -17,19 +15,21 @@ import type {
   DeleteCardSignageLink,
   StatusInfo,
 } from './types/public';
-import { handleErrors, makeBasicAuth, validateCardIDm } from './utils';
+import { fetchJson, handleErrors, makeBasicAuth, validateCardIDm } from './utils';
 
 export class SignageApiClient {
-  private axiosInstance: AxiosInstance;
+  private baseProxyUrl: string;
+
+  private authHeader: string;
 
   constructor(userId: string, password: string, baseProxyUrl?: string) {
-    const authHeader = makeBasicAuth(userId, password);
-    this.axiosInstance = axios.create({
-      baseURL: baseProxyUrl ?? 'https://proxy-iniad-signage-api.imoken27.workers.dev',
-      headers: {
-        Authorization: authHeader,
-      },
-    });
+    this.baseProxyUrl =
+      baseProxyUrl ?? 'https://proxy-iniad-signage-api.imoken27.workers.dev';
+    this.authHeader = makeBasicAuth(userId, password);
+  }
+
+  private makeRequestUrl(pathname: string): string {
+    return new URL(pathname, this.baseProxyUrl).toString();
   }
 
   //カードIDmに紐づくサイネージで表示するコンテンツを返す関数
@@ -37,7 +37,10 @@ export class SignageApiClient {
     const validatedCardIDm = validateCardIDm(cardIDm);
     const requestUrl = `/api/v1/signage/cards/${validatedCardIDm}`;
 
-    const response = await this.axiosInstance.get<CardSignageLinkApiResponse>(requestUrl);
+    const response = await fetchJson<CardSignageLinkApiResponse>(
+      this.makeRequestUrl(requestUrl),
+      this.authHeader,
+    );
     const responseData = handleErrors<CardSignageLinkApiResponse>(response);
 
     const successInfo: StatusInfo = {
@@ -51,7 +54,10 @@ export class SignageApiClient {
   public async getAllCardIDmAndContentList(): Promise<AllCardSignageLinks> {
     const requestUrl = '/api/v1/signage/cards';
 
-    const response = await this.axiosInstance.get<AllCardSignageLinksApiResponse>(requestUrl);
+    const response = await fetchJson<AllCardSignageLinksApiResponse>(
+      this.makeRequestUrl(requestUrl),
+      this.authHeader,
+    );
     const responseData = handleErrors<AllCardSignageLinksApiResponse>(response);
 
     const successInfo: StatusInfo = {
@@ -76,10 +82,14 @@ export class SignageApiClient {
     };
     const requestUrl = `/api/v1/signage/cards/${validatedCardIDm}`;
 
-    const response = await this.axiosInstance.put<CardSignageLinkApiResponse>(
-      requestUrl,
-      data,
-      config,
+    const response = await fetchJson<CardSignageLinkApiResponse>(
+      this.makeRequestUrl(requestUrl),
+      this.authHeader,
+      {
+        method: 'PUT',
+        body: JSON.stringify(data),
+        headers: config.headers,
+      },
     );
     const responseData = handleErrors(response);
 
@@ -96,7 +106,13 @@ export class SignageApiClient {
     const validatedCardIDm = validateCardIDm(cardIDm);
     const requestUrl = `/api/v1/signage/cards/${validatedCardIDm}`;
 
-    const response = await this.axiosInstance.delete<DeleteCardSignageLinkApiResponse>(requestUrl);
+    const response = await fetchJson<DeleteCardSignageLinkApiResponse>(
+      this.makeRequestUrl(requestUrl),
+      this.authHeader,
+      {
+        method: 'DELETE',
+      },
+    );
 
     const responseData = handleErrors<DeleteCardSignageLinkApiResponse>(response);
 

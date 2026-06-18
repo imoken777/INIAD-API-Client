@@ -1,19 +1,75 @@
-import type { AxiosResponse } from 'axios';
 import type { ValidatedCardIDm } from './types/internal';
 import type { StatusInfo } from './types/public';
+
+export interface ApiResponse<T> {
+  data: T;
+  status: number;
+  statusText: string;
+}
+
+export class HttpError extends Error {
+  public readonly status: number;
+
+  public readonly statusText: string;
+
+  constructor(status: number, statusText: string) {
+    super(`Request failed with status ${status}: ${statusText}`);
+    this.name = 'HttpError';
+    this.status = status;
+    this.statusText = statusText;
+  }
+}
+
+export const isHttpError = (error: unknown): error is HttpError => {
+  return error instanceof HttpError;
+};
+
+const parseResponseBody = async <T>(response: Response): Promise<T> => {
+  const responseText = await response.text();
+
+  if (responseText.length === 0) {
+    return undefined as T;
+  }
+
+  return JSON.parse(responseText) as T;
+};
+
+export const fetchJson = async <T>(
+  url: string,
+  authHeader: string,
+  init?: RequestInit,
+): Promise<ApiResponse<T>> => {
+  const mergedHeaders = {
+    Authorization: authHeader,
+    ...(init?.headers ?? {}),
+  };
+
+  const response = await fetch(url, {
+    ...init,
+    headers: mergedHeaders,
+  });
+
+  if (!response.ok) {
+    throw new HttpError(response.status, response.statusText);
+  }
+
+  const data = await parseResponseBody<T>(response);
+
+  return {
+    data,
+    status: response.status,
+    statusText: response.statusText,
+  };
+};
 
 export const dummyStatusInfo: StatusInfo = {
   status: 'dummy',
   description: 'Dummy data is displayed for access from outside the INIAD Wi-Fi.',
 };
 
-export const handleErrors = <T>(response: AxiosResponse<T>): T => {
+export const handleErrors = <T>(response: ApiResponse<T>): T => {
   if (response.status >= 500 && response.status <= 599) {
-    const error = {
-      status: response.status,
-      statusText: response.statusText,
-    };
-    throw error;
+    throw new HttpError(response.status, response.statusText);
   }
   return response.data;
 };
